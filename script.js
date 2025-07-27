@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
      try {
         // Fetch data from your new back-end API
-        const response = await fetch('http://localhost:5000/api/articles');
+        const response = await fetch('https://blogger-api.onrender.com/api/articles');
         articles = await response.json();
     } catch (error) {
         console.error('Failed to fetch articles:', error);
