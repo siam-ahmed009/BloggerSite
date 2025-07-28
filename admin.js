@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const page = window.location.pathname.split("/").pop(); // Gets the current HTML file name
     
-    if (page === 'admin-login.html') {
+    if (page === 'index.html' || page === '') {
         handleLoginPage();
     } else if (page === 'dashboard.html') {
         handleDashboardPage();
@@ -46,7 +46,7 @@ function handleLoginPage() {
 function handleDashboardPage() {
     const token = localStorage.getItem('authToken');
     if (!token) {
-        window.location.href = 'admin-login.html';
+        window.location.href = 'index.html';
         return;
     }
     
@@ -54,7 +54,7 @@ function handleDashboardPage() {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             localStorage.removeItem('authToken');
-            window.location.href = 'admin-login.html';
+            window.location.href = 'index.html';
         });
     }
 
@@ -169,7 +169,7 @@ async function deleteArticle(id) {
 async function handleEditArticlePage() {
     const token = localStorage.getItem('authToken');
     if (!token) {
-        window.location.href = 'admin-login.html';
+        window.location.href = 'index.html';
         return;
     }
 
