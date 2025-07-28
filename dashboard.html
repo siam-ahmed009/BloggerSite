@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="admin-body">
+    <header class="header admin-header">
+        <div class="container header-container">
+            <a href="home.html" class="brand-logo">
+                <img src="img/Logo.png" alt="Logo">
+            </a>
+            <nav>
+                <a href="home.html" class="nav-link" target="_blank">View Site</a>
+                <button id="logout-btn" class="btn-secondary">Logout</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container dashboard-main-content">
+        <section class="edit-form-container" style="margin-bottom: 3rem;">
+            <h2 class="cf-title">Manage Website Content</h2>
+            <form id="site-content-form" class="cf-form">
+                <h3>Hero Section</h3>
+                <div class="cf-group">
+                    <label for="heroTitle">Hero Title</label>
+                    <input type="text" id="heroTitle">
+                </div>
+                <div class="cf-group">
+                    <label for="heroDescription">Hero Description</label>
+                    <textarea id="heroDescription" rows="3"></textarea>
+                </div>
+                <div class="cf-group">
+                    <label for="heroImage">Hero Image Path</label>
+                    <input type="text" id="heroImage">
+                </div>
+                <hr style="margin: 2rem 0;">
+                <h3>About Section (Homepage)</h3>
+                <div class="cf-group">
+                    <label for="aboutTitle">About Title</label>
+                    <input type="text" id="aboutTitle">
+                </div>
+                <div class="cf-group">
+                    <label for="aboutDescription1">About Paragraph 1</label>
+                    <textarea id="aboutDescription1" rows="4"></textarea>
+                </div>
+                 <div class="cf-group">
+                    <label for="aboutDescription2">About Paragraph 2</label>
+                    <textarea id="aboutDescription2" rows="4"></textarea>
+                </div>
+                <hr style="margin: 2rem 0;">
+                <h3>Footer Section</h3>
+                 <div class="cf-group">
+                    <label for="footerAboutImage">Footer Image Path</label>
+                    <input type="text" id="footerAboutImage">
+                </div>
+                <div class="cf-group">
+                    <label for="footerAboutText">Footer "About" Text</label>
+                    <textarea id="footerAboutText" rows="3"></textarea>
+                </div>
+    
+                <button type="submit" class="btn-primary">Save All Content</button>
+            </form>
+        </section>
+        
+        <h2 class="cf-title">Manage Articles</h2>
+        <div class="dashboard-actions">
+            <a href="edit-article.html" class="btn-add-new">+ Add New Article</a>
+        </div>
+        <div class="content-table-wrapper">
+            <div id="dashboard-articles-container">
+                </div>
+        </div>
+    </main>
+    <script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TimothySykes</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+   <div id="menu-overlay" class="menu-overlay"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="#hero-section" class="brand-logo">
+                <img src="img/Logo.png" alt="Johannes Logo">
+            </a>
+            
+            <nav class="desktop-nav">
+                 <a href="home.html#hero-section" class="nav-link nav-link-active">Home</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="#article-section" class="nav-link">Article</a>
+                <a href="#contact-form" class="nav-link">Contact</a>
+                <a href="#social-icon" class="nav-link">Social</a>
+                <a href="#" id="desktop-menu-trigger" class="nav-link nav-menu-icon-wrapper">
+                    
+                    <svg class="nav-menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </a>
+            </nav>
+            <button id="mobile-menu-button" class="mobile-menu-button">
+                <svg class="mobile-menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Header End -->
+
+    <!-- Hero Section -->
+    <main id="hero-section" class="hero-section">
+        <div class="container hero-container">
+            <div class="hero-image-column">
+                <div class="image-blob-wrapper">
+                    <div class="blob blob-image-bg"></div>
+                    <div class="blob blob-image-clipper">
+                        <img src="img/image.png" alt="Artist painting" id="hero-image" class="blob-image">
+                    </div>
+                </div>
+            </div>
+            <div class="hero-text-column">
+                 <div class="blob-background"></div>
+                <div class="hero-text-content">
+                    <h1 id="hero-title" class="hero-title">Master the Patterns Behind Winning Trades</h1>
+                    <p id="hero-description" class="hero-description">
+                        Learn the Strategies That Have Taken Traders From Humble Beginnings to Life-Changing Wins!
+                    </p>
+                    <a href="#contact-form" class="btn-primary">Join Tim's Winning Team! ➞</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Hero Section End -->
+
+    <!-- About Me Section -->
+
+ <section id="about-me-section" class="about-me-section">
+        <div class="container about-me-container">
+            
+            <div class="about-me-text-column">
+                <h2 id="about-me-title" class="about-me-title">About Timothy Sykes</h2>
+                <p id="about-me-desc-1" class="about-me-description">
+                    Hello! I'm Timothy Sykes, a passionate writer and content creator with a knack for financial markets. My journey began over a decade ago, fueled by a desire to demystify complex trading strategies.
+                </p>
+                <p id="about-me-desc-2" class="about-me-description">
+                    I believe in empowering readers with well-researched, actionable insights. My goal is to transform intricate topics into easily digestible content, whether it's breaking down stock market patterns or sharing compelling narratives. I've been featured in various notable publications and am dedicated to helping aspiring traders achieve financial independence.
+                </p>
+                
+                <div class="about-me-social-icons">
+                    <a href="#" class="social-icon" aria-label="Facebook"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg></a>
+                    <a href="#" class="social-icon" aria-label="X"><span class="social-icon-x">X</span></a>
+                    </div>
+            </div>
+        </div>
+    </section>
+    <!-- About Me Section End -->
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu-overlay" class="mobile-menu-overlay"></div>
+
+ <div id="mobile-menu" class="mobile-menu">
+ <button id="close-menu-button" class="close-menu-button">&times;</button>
+ <div class="mobile-nav-links">
+ <nav id="mobile-main-nav">
+ <a href="#hero-section" class="nav-link mobile-nav-link nav-link-active">Home</a>
+ <a href="about.html" class="nav-link mobile-nav-link">About</a> <a href="#article-section" class="nav-link mobile-nav-link">Article</a>
+ <a href="#contact-form" class="nav-link mobile-nav-link">Contact</a>
+ <a href="#social-icon" class="nav-link mobile-nav-link">Social</a>
+ </nav>
+ <nav id="desktop-side-menu-content">
+ <a href="" class="nav-link mobile-nav-link">More Links</a>
+ <a href="" class="nav-link mobile-nav-link">Socials</a>
+ <a href="" class="nav-link mobile-nav-link">Search</a>
+ <a href="" class="nav-link mobile-nav-link">Example</a>
+ </nav>
+ </div>
+ </div>
+    <!--Article Section-->
+    <section id="article-section" class="stories-section"> 
+    <h2>Latest Articles</h2>
+    <div id="articles-container" class="articles-grid">
+        </div>
+    <div class="view-all-container">
+        <!-- <button id="view-all-btn" class="view-all-btn">View All Latest Articles &rarr;</button> -->
+        <a href="articles.html" id="view-all-btn" class="view-all-btn">View All Latest Articles →</a>
+    </div>
+    <div id="article-modal" class="modal-container">
+    <div class="modal-content">
+        <button id="modal-close-btn" class="modal-close-btn">&times;</button>
+        <img src="" alt="Article Image" id="modal-image" class="modal-image">
+        <h2 id="modal-title"></h2>
+        <p id="modal-description"></p>
+    </div>
+</div>
+</section>
+  <!-- Articles Section End -->
+
+    
+ <!-- Contact Form -->
+ <section id="contact-form" class="cf-wrapper">
+  <h2 class="cf-title">Interested in working together?</h2>
+  <form id="cf-form">
+    <div class="cf-row">
+      <div class="cf-group">
+        <label for="cf-firstName">First Name <span>*</span></label>
+        <input type="text" id="cf-firstName" required>
+      </div>
+      <div class="cf-group">
+        <label for="cf-lastName">Last Name</label>
+        <input type="text" id="cf-lastName">
+      </div>
+    </div>
+
+    <div class="cf-group">
+      <label for="cf-email">Email <span>*</span></label>
+      <input type="email" id="cf-email" required>
+    </div>
+
+    <div class="cf-group">
+      <label for="cf-subject">Subject <span>*</span></label>
+      <input type="text" id="cf-subject" required>
+    </div>
+
+    <div class="cf-group">
+      <label for="cf-message">Message <span>*</span></label>
+      <textarea id="cf-message" rows="4" required></textarea>
+    </div>
+
+    <button type="submit">Submit</button>
+
+    <div id="cf-success-message" style="display: none; color: green; text-align: center; margin-top: 10px;">
+  Form submitted successfully!
+</div>
+  </form>
+</section>
+  <!-- Contact Form End --> 
+   
+    <footer id="social-icon" class="footer">
+        <div class="footer-container">
+            <div class="footer-about">
+                <a href="#" class="logo">
+                    <img src="img/logo.png" alt="Footer Logo" style="height: 35px;">
+                </a>
+                <div class="about-content">
+                    <img src="img/Tim-Sykes-Headshot-Footer.png" alt="Timothy Sykes" id="footer-about-image" class="about-image">
+                    <p id="footer-about-text" class="about-text">
+                        I became a self-made millionaire by the age of 21, <br> trading thousands of Penny Stocks – yep you read <br> that right. Penny Stocks. You may have heard...
+                        <br><a href="#">Read more about Timothy Sykes...</a>
+                    </p>
+                </div>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/timsykesfans/" class="social-icon" aria-label="Facebook">
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+                    </a>
+                    <a href="https://www.youtube.com/channel/UCoSG43KFjTe0trsteSQ46Ng" class="social-icon" aria-label="YouTube">
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0C.897 3.434 0 4.85 0 12s.897 8.566 4.385 8.816c3.6.245 11.626.246 15.23 0C23.103 20.566 24 19.15 24 12s-.897-8.566-4.385-8.816zM9.75 16.2V7.8l6.5 4.2-6.5 4.2z"/></svg>
+                    </a>
+                    <a href="https://www.instagram.com/timothysykes/?hl=en" class="social-icon" aria-label="Instagram">
+                        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.069-1.645-.069-4.85s.011-3.584.069-4.85c.149-3.225 1.664-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163zm0 1.802c-3.552 0-3.92.016-5.292.076-2.828.13-4.409 1.7-4.542 4.542-.06 1.372-.076 1.74-.076 5.292s.016 3.92.076 5.292c.13 2.828 1.7 4.409 4.542 4.542 1.372.06 1.74.076 5.292.076s3.92-.016 5.292-.076c2.828-.13 4.409-1.7 4.542-4.542.06-1.372.076-1.74.076-5.292s-.016-3.92-.076-5.292c-.13-2.828-1.7-4.409-4.542-4.542-1.372-.06-1.74-.076-5.292-.076zm0 3.192c-2.977 0-5.4 2.423-5.4 5.4s2.423 5.4 5.4 5.4 5.4-2.423 5.4-5.4-2.423-5.4-5.4-5.4zm0 8.8c-1.879 0-3.4-1.521-3.4-3.4s1.521-3.4 3.4-3.4 3.4 1.521 3.4 3.4-1.521 3.4-3.4 3.4zm5.438-8.837c-.828 0-1.5.672-1.5 1.5s.672 1.5 1.5 1.5 1.5-.672 1.5-1.5-.672-1.5-1.5-1.5z"/></svg>
+                    </a>
+                    <a href="https://x.com/timothysykes?lang=en" class="social-icon" aria-label="X">
+                       <span class="social-icon-x">X</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <h3>Learn</h3>
+                <ul>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Stock News</a></li>
+                    <li><a href="#">Trading Guides</a></li>
+                    <li><a href="#">Stocks</a></li>
+                    <li><a href="#">Resources</a></li>
+                    <li><a href="#">About</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h3>Tim's Important Resources</h3>
+                <ul>
+                    <li><a href="#">Penny Stocking 101: How To Get Started with Penny Stocks</a></li>
+                    <li><a href="#">Which Penny Stocks To Buy</a></li>
+                    <li><a href="#">How To Invest In Penny Stocks</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>     
+    
+</body>
+</html>

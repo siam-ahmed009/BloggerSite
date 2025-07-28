@@ -42,19 +42,32 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- 2. Articles Data (Central source for both pages) ---
     let articles = [];
+    let siteContent = {};
 
      try {
         // Fetch data from your new back-end API
-        const response = await fetch('https://blogger-api.onrender.com/api/articles');
-        articles = await response.json();
+        // const response = await fetch('http://localhost:5000/api/articles');
+        // articles = await response.json();
+         const [articlesRes, contentRes] = await Promise.all([
+            fetch('http://localhost:5000/api/articles'),
+            fetch('http://localhost:5000/api/content')
+        ]);
+        articles = await articlesRes.json();
+        siteContent = await contentRes.json();
     } catch (error) {
-        console.error('Failed to fetch articles:', error);
-        // Optionally, display an error message on the page
+        // console.error('Failed to fetch articles:', error);
+        console.error('Failed to fetch initial site data:', error);
+        
     }
 
     // --- 3. Page-Specific Logic ---
     const homepageContainer = document.getElementById("articles-container");
     const articlesPageContainer = document.getElementById("full-articles-container");
+
+// Populate the dynamic content if on the homepage
+    if (document.body.contains(document.getElementById('hero-section'))) {
+        populatePublicContent(siteContent);
+    }
 
     if (homepageContainer) {
         setupHomepage(articles);
@@ -63,6 +76,39 @@ document.addEventListener('DOMContentLoaded', async () => {
         setupArticlesPage(articles);
     }
 });
+
+function populatePublicContent(content) {
+    if (!content) return;
+
+    // Helper to safely update content
+    const updateText = (id, text) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+    };
+    const updateHTML = (id, html) => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = html;
+    };
+    const updateSrc = (id, src) => {
+        const el = document.getElementById(id);
+        if (el) el.src = src;
+    };
+
+    // Update Hero Section
+    updateText('hero-title', content.heroTitle);
+    updateText('hero-description', content.heroDescription);
+    updateSrc('hero-image', content.heroImage);
+
+    // Update About Me Section
+    updateText('about-me-title', content.aboutTitle);
+    updateText('about-me-desc-1', content.aboutDescription1);
+    updateText('about-me-desc-2', content.aboutDescription2);
+    
+    // Update Footer
+    updateSrc('footer-about-image', content.footerAboutImage);
+    // Note: Using innerHTML for the footer text to keep the "Read more" link
+    updateHTML('footer-about-text', `${content.footerAboutText}<br><a href="about.html">Read more about Timothy Sykes...</a>`);
+}
 
 // --- HOMEPAGE FUNCTIONS ---
 function setupHomepage(articles) {

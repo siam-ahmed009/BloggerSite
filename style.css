@@ -1470,6 +1470,13 @@ html {
     --text-muted-color: #5f6368;
     --border-color: #dfe1e5;
     --font-family: 'Poppins', sans-serif;
+
+    --admin-bg: #f8fafc;         /* Light grey background */
+    --admin-surface: #ffffff;   /* White for cards/surfaces */
+    --admin-primary: #f13b3b;   /* Your site's red color */
+    --admin-text: #334155;      /* Dark slate for text */
+    --admin-border: #e2e8f0;    /* Light border color */
+
 }
 
 /* --- General Body and Resets --- */
@@ -1598,4 +1605,276 @@ p { margin-bottom: 1rem; color: var(--text-muted-color); }
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
     border-color: var(--primary-color);
+}
+
+.admin-login-body {
+    background-color: var(--admin-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    background-color: var(--admin-surface);
+    padding: 2.5rem;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+}
+
+.login-container .brand-logo {
+    display: block;
+    margin: 0 auto 1.5rem auto;
+    width: 150px;
+    height: auto;
+}
+
+.login-container h2 {
+    text-align: center;
+    font-size: 1.5rem;
+    color: var(--admin-text);
+    margin-bottom: 1.5rem;
+}
+
+/* Re-using some form styles but with admin colors */
+.admin-login-body .cf-group input {
+    border-radius: 4px;
+    border-color: var(--admin-border);
+    padding: 10px;
+}
+
+.admin-login-body #login-form button {
+    border-radius: 4px;
+    background-color: var(--admin-primary);
+}
+
+/* Dashboard Styles */
+.dashboard-header {
+    background-color: var(--admin-surface);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.dashboard-main {
+    padding: 2rem 0;
+}
+
+.dashboard-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 2rem;
+}
+
+.btn-add-new {
+    background-color: var(--admin-primary);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+.btn-add-new:hover {
+    background-color: #d93025;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--admin-surface);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    overflow: hidden; /* Important for border-radius on table */
+}
+
+.admin-table th, .admin-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--admin-border);
+}
+
+.admin-table th {
+    background-color: #f1f5f9;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+}
+
+.admin-table tr:last-child td {
+    border-bottom: none;
+}
+
+.admin-table .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.admin-table button {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--admin-border);
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #fff;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.admin-table .btn-edit:hover { background-color: #3b82f6; color: white; border-color: #3b82f6; }
+.admin-table .btn-delete:hover { background-color: #ef4444; color: white; border-color: #ef4444; }
+
+/* Edit Form Styles */
+.edit-form-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    background: var(--admin-surface);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+/* --- NEW: Admin Login & Dashboard Styles --- */
+.admin-body {
+    background-color: #f8f9fa; /* Light grey background for admin pages */
+}
+
+/* --- Login Page --- */
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    background: #ffffff;
+    padding: 2.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    border-radius: 0px; /* Consistent with your site's sharp corners */
+}
+
+.login-card .brand-logo {
+    display: block;
+    width: 180px;
+    height: auto;
+    margin: 0 auto 2rem auto;
+}
+
+.login-card .cf-title {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* --- Dashboard --- */
+.admin-header {
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.admin-header .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.btn-secondary {
+    background-color: #64748B;
+    color: white;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.btn-secondary:hover {
+    background-color: #475569;
+}
+
+.dashboard-main-content {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.dashboard-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 2rem;
+}
+
+.btn-add-new {
+    display: inline-block;
+    background-color: #f13b3b;
+    color: white;
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+}
+.btn-add-new:hover {
+    background-color: #d93025; /* A slightly darker red */
+}
+
+.content-table-wrapper {
+    background: #ffffff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+    overflow-x: auto; /* For responsiveness */
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
+}
+
+.admin-table th {
+    background-color: #f8fafc;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+}
+
+.admin-table tr:last-child td {
+    border-bottom: none;
+}
+
+.admin-table .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.action-buttons a,
+.action-buttons button {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    background-color: #fff;
+    font-family: 'Muli', Arial, sans-serif;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: #334155;
+    transition: all 0.2s ease;
+}
+
+.action-buttons .btn-edit:hover {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+.action-buttons .btn-delete:hover {
+    background-color: #ef4444;
+    border-color: #ef4444;
+    color: white;
 }
