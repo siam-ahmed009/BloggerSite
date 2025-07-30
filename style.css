@@ -312,17 +312,17 @@
             margin-bottom: 24px;
         }
 
-        .btn-primary {
+        .btn-primary1 {
             display: inline-block;
             background-color: #f13b3b;
-            color: white;
+            color: rgb(255, 255, 255);
             font-weight: 700;
             padding: 0.75rem 2rem;
             box-shadow: 0 10px 15px 0 rgba(241, 59, 59, 0.2);
             text-decoration: none;
             transition: all 0.3s ease-in-out;        }
 
-        .btn-primary:hover {
+        .btn-primary1:hover {
             background-color: #f13b3b;
             box-shadow: none
         }
@@ -643,6 +643,7 @@
     border: 1px solid #ccc;
     font-size: 14px;
     border-radius: 0px;
+    margin: 10px 5px 0 0;
   }
 
   .cf-group textarea {
@@ -1475,7 +1476,10 @@ html {
     --admin-surface: #ffffff;   /* White for cards/surfaces */
     --admin-primary: #f13b3b;   /* Your site's red color */
     --admin-text: #334155;      /* Dark slate for text */
-    --admin-border: #e2e8f0;    /* Light border color */
+    --admin-border: #e2e8f0;
+    
+    
+   
 
 }
 
@@ -1720,12 +1724,29 @@ p { margin-bottom: 1rem; color: var(--text-muted-color); }
     transition: background-color 0.2s, color 0.2s;
 }
 
+.btn-primary {
+            display: inline-block;
+            background-color: #f13b3b;
+            color: rgb(255, 255, 255);
+            border: none;
+            font-weight: 700;
+            padding: 0.75rem 2rem;
+            box-shadow: 0 10px 15px 0 rgba(241, 59, 59, 0.2);
+            text-decoration: none;
+            transition: all 0.3s ease-in-out;  
+        margin-top: 15px;      
+    }
+
+        .btn-primary:hover {
+            background-color: #f13b3b;
+            box-shadow: none
+        }
 .admin-table .btn-edit:hover { background-color: #3b82f6; color: white; border-color: #3b82f6; }
 .admin-table .btn-delete:hover { background-color: #ef4444; color: white; border-color: #ef4444; }
 
 /* Edit Form Styles */
 .edit-form-container {
-    max-width: 800px;
+    width: 800px;
     margin: 2rem auto;
     background: var(--admin-surface);
     padding: 2rem;
@@ -1734,7 +1755,7 @@ p { margin-bottom: 1rem; color: var(--text-muted-color); }
 }
 /* --- NEW: Admin Login & Dashboard Styles --- */
 .admin-body {
-    background-color: #f8f9fa; /* Light grey background for admin pages */
+    background-color: #ffffff; /* Light grey background for admin pages */
 }
 
 /* --- Login Page --- */
@@ -1782,7 +1803,7 @@ p { margin-bottom: 1rem; color: var(--text-muted-color); }
 }
 
 .btn-secondary {
-    background-color: #64748B;
+    background-color: #ffffff;
     color: white;
     padding: 0.5rem 1rem;
     text-decoration: none;
@@ -1843,7 +1864,7 @@ p { margin-bottom: 1rem; color: var(--text-muted-color); }
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #64748b;
+    color: #000000;
 }
 
 .admin-table tr:last-child td {
@@ -1877,4 +1898,275 @@ p { margin-bottom: 1rem; color: var(--text-muted-color); }
     background-color: #ef4444;
     border-color: #ef4444;
     color: white;
+}
+
+.admin-portal {
+    background-color: var(--admin-dark-bg);
+    color: var(--admin-text-primary);
+    font-family: 'Poppins', sans-serif; /* Using Poppins for a modern feel */
+}
+
+.admin-portal .login-wrapper {
+    background: linear-gradient(rgba(17, 24, 39, 0.8), rgba(17, 24, 39, 0.8)), url('img/timothy-sykes-stock-trading-4205105282.jpg');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.admin-portal .login-card {
+    background-color: rgba(31, 41, 55, 0.8); /* Semi-transparent surface */
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--admin-border);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 420px;
+    padding: 2.5rem;
+    border-radius: 0px;
+}
+.admin-portal .login-card .brand-logo {
+    display: block;
+    width: 180px;
+    height: auto;
+    margin: 0 auto 2rem auto;
+}
+
+.admin-portal .login-card .cf-title {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--admin-text-primary);
+    margin-bottom: 2rem;
+}
+
+
+.admin-portal .cf-group label {
+    color: var(--admin-text-secondary);
+    font-weight: 500;
+    margin-bottom: 2px;
+}
+.admin-portal .cf-group input {
+    background-color: #ffffff;
+    border: 1px solid #4b5563;
+    color: var(--admin-text-primary);
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 0px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    margin-bottom: 10px;
+}
+
+.admin-portal .cf-group input:focus {
+    outline: none;
+    border-color: var(--admin-accent);
+    box-shadow: 0 0 0 3px rgba(241, 59, 59, 0.3);
+}
+
+.admin-portal .cf-form button:hover {
+    background-color: var(--admin-accent-hover);
+}
+
+/* --- Dashboard & Edit Page Layout --- */
+.admin-dashboard-layout {
+    display: flex;
+}
+
+.admin-portal #login-form button {
+    background-color: var(--admin-accent);
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+.admin-portal #login-form button:hover {
+    background-color: var(--admin-accent-hover);
+}
+
+/* --- Dashboard & Edit Page Layout --- */
+.admin-dashboard-layout {
+    display: flex;
+}
+
+.admin-sidebar {
+    width: 260px;
+    background-color: var(--admin-dark-bg);
+    border-right: 1px solid var(--admin-border);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+}
+
+.admin-sidebar .brand-logo {
+    padding: 0;
+    margin-bottom: 2.5rem;
+}
+
+.admin-nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    color: var(--admin-text-secondary);
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: color 0.2s, background-color 0.2s;
+}
+.admin-nav-link:hover {
+    background-color: var(--admin-surface);
+    color: var(--admin-text-primary);
+}
+.admin-nav-link.active {
+    background-color: var(--admin-accent);
+    color: #cc1111;
+}
+.admin-sidebar .logout-btn {
+    margin-top: auto;
+    margin-bottom: 20px; /* Pushes to the bottom */
+}
+
+.admin-main-content {
+    margin-left: 260px; /* Same as sidebar width */
+    width: calc(100% - 260px);
+    padding: 2rem;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+.admin-header h1 {
+    font-size: 2rem;
+}
+
+/* --- Redesigned Table --- */
+.admin-table-container {
+    background-color: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+}
+
+.admin-table th {
+    background-color: #ffffff;
+    color: var(--admin-text-secondary);
+}
+
+.admin-table td {
+    color: var(--admin-text-secondary);
+}
+
+.admin-table tr:hover td {
+    background-color: rgba(228, 21, 21, 0.683);
+    color: #ffffff;
+}
+
+/* --- Redesigned Forms --- */
+.admin-portal .edit-form-container {
+    background-color: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    box-shadow: none;
+    padding: 2.5rem;
+}
+.admin-portal .edit-form-container h3 {
+   font-size: 1.25rem;
+    color: var(--admin-text-primary);
+    border-bottom: 1px solid var(--admin-border);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+.admin-portal .edit-form-container {
+    background-color: var(--admin-accent);
+}
+.admin-portal .edit-form-container {
+    background-color: var(--admin-accent-hover);
+}
+
+.admin-portal .edit-form-container textarea {
+    background-color: #ffffff;
+    border: 1px solid #4b5563;
+    color: var(--admin-text-primary);
+    padding: 12px;
+    font-size: 1rem;
+    border-radius: 0px;
+}
+
+/* --- NEW: White Background for Login Page --- */
+
+.login-page-body {
+    background: #f8fafc; /* A very light grey for the page background */
+}
+
+.login-page-body .login-wrapper {
+    background: none; /* Removes the dark background image */
+}
+
+.login-page-body .login-card {
+    background-color: #ffffff; /* Sets the card background to pure white */
+    border: 1px solid var(--admin-border);
+}
+
+.login-page-body .login-card .cf-title {
+    color: #111827; /* Dark text for the title */
+}
+
+.login-page-body .cf-group label {
+    color: #4b5563; /* Softer dark text for labels */
+}
+
+.login-page-body .cf-group input {
+    background-color: #f9fafb; /* Light background for inputs */
+    border: 1px solid #d1d5db;
+    color: #111827; /* Dark text for typing */
+}
+
+.login-page-body .cf-group input:focus {
+    border-color: var(--admin-accent);
+    box-shadow: 0 0 0 3px rgba(241, 59, 59, 0.2);
+}
+
+/* ... existing styles ... */
+
+.hidden {
+    display: none;
+}
+
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
 }
