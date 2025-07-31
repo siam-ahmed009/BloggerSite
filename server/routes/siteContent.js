@@ -1,14 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const SiteContent = require('../models/SiteContent'); // Make sure this model exists
-const { protect } = require('../middleware/authMiddleware'); // Correctly import the 'protect' function
+const SiteContent = require('../models/SiteContent');
+const { protect } = require('../middleware/authMiddleware'); // Corrected import
 
-// @desc    Get site content
-// @route   GET /api/site-content
-// @access  Public
+// GET site content
 router.get('/', async (req, res) => {
     try {
-        // Find the one and only content document, or create it if it doesn't exist
         let content = await SiteContent.findOne();
         if (!content) {
             content = await SiteContent.create({});
@@ -19,14 +16,12 @@ router.get('/', async (req, res) => {
     }
 });
 
-// @desc    Update site content
-// @route   PUT /api/site-content
-// @access  Private (Admin Only)
-router.put('/', protect, async (req, res) => { // Use 'protect' as middleware here
+// PUT (update) site content - This is the corrected route
+router.put('/', protect, async (req, res) => {
     try {
         const updatedContent = await SiteContent.findOneAndUpdate({}, req.body, {
             new: true,
-            upsert: true // Creates the document if it doesn't exist
+            upsert: true
         });
         res.json(updatedContent);
     } catch (error) {

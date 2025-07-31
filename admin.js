@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('authToken');
 
-    // Redirect to login if not authenticated
     if (!token && !window.location.pathname.endsWith('index.html') && window.location.pathname !== '/') {
         window.location.href = 'index.html';
         return;
@@ -45,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- DASHBOARD PAGE LOGIC ---
     if (window.location.pathname.endsWith('dashboard.html')) {
-        // Section visibility toggling
         const sectionSelector = document.getElementById('section-selector');
         const sections = document.querySelectorAll('.dashboard-section');
 
@@ -57,10 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
-        // Manually trigger change to show the first section by default
         sectionSelector.dispatchEvent(new Event('change'));
 
-        // Initialize all dashboard functionalities
         handleArticleManagement(token);
         handleMessageManagement(token);
         handleSiteContentForm(token);
@@ -71,20 +67,15 @@ document.addEventListener('DOMContentLoaded', () => {
 function handleSiteContentForm(token) {
     const form = document.getElementById('site-content-form');
     if (!form) return;
-
     const fields = ['heroTitle', 'heroDescription', 'aboutTitle', 'aboutDescription1', 'footerAboutText'];
 
-    // Load existing content into the form
-    fetch('/api/site-content')
-        .then(res => res.json())
-        .then(data => {
-            fields.forEach(field => {
-                const element = document.getElementById(field);
-                if (element && data) element.value = data[field] || '';
-            });
-        }).catch(err => console.error('Failed to load site content:', err));
+    fetch('/api/site-content').then(res => res.json()).then(data => {
+        fields.forEach(field => {
+            const element = document.getElementById(field);
+            if (element && data) element.value = data[field] || '';
+        });
+    }).catch(err => console.error('Failed to load site content:', err));
 
-    // Handle form submission to update content
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const body = {};
@@ -119,48 +110,50 @@ function handleArticleManagement(token) {
     };
 
     const loadArticles = async () => {
-        try {
-            const res = await fetch('/api/articles');
-            const articles = await res.json();
-            articleList.innerHTML = `
-                <table class="admin-table">
-                    <thead><tr><th>Title</th><th>Author</th><th>Published</th><th>Actions</th></tr></thead>
-                    <tbody>
-                        ${articles.map(article => `
-                            <tr>
-                                <td>${article.title}</td>
-                                <td>${article.author || 'N/A'}</td>
-                                <td>${article.published ? 'Yes' : 'No'}</td>
-                                <td class="action-buttons">
-                                    <button class="btn-edit" data-id="${article._id}">Edit</button>
-                                    <button class="btn-delete" data-id="${article._id}">Delete</button>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>`;
-        } catch (error) {
-            articleList.innerHTML = '<p>Could not load articles.</p>';
-        }
+        const res = await fetch('/api/articles');
+        const articles = await res.json();
+        articleList.innerHTML = `
+            <table class="admin-table">
+                <thead><tr><th>Title</th><th>Author</th><th>Published</th><th>Actions</th></tr></thead>
+                <tbody>
+                    ${articles.map(article => `
+                        <tr>
+                            <td>${article.title}</td>
+                            <td>${article.author || 'N/A'}</td>
+                            <td>${article.published ? 'Yes' : 'No'}</td>
+                            <td class="action-buttons">
+                                <button class="btn-edit" data-id="${article._id}">Edit</button>
+                                <button class="btn-delete" data-id="${article._id}">Delete</button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>`;
     };
 
     articleForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = articleIdInput.value;
-        const formData = new FormData(articleForm);
-        // Correctly handle checkbox value for FormData
-        formData.set('published', document.getElementById('article-published').checked);
-        
+        const formData = new FormData();
+        formData.append('title', document.getElementById('article-title').value);
+        formData.append('content', document.getElementById('article-content').value);
+        formData.append('author', document.getElementById('article-author').value);
+        formData.append('published', document.getElementById('article-published').checked);
+        const imageFile = document.getElementById('article-image').files[0];
+        if (imageFile) {
+            formData.append('image', imageFile);
+        }
+
         const url = id ? `/api/articles/${id}` : '/api/articles';
         const method = id ? 'PUT' : 'POST';
 
         try {
             const res = await fetch(url, {
-                method,
+                method: method,
                 headers: { 'Authorization': `Bearer ${token}` },
                 body: formData
             });
-            if (!res.ok) throw new Error('Failed to save article.');
+            if (!res.ok) throw new Error((await res.json()).message || 'Failed to save article.');
             resetArticleForm();
             loadArticles();
         } catch (error) {
@@ -171,7 +164,6 @@ function handleArticleManagement(token) {
     articleList.addEventListener('click', async (e) => {
         const target = e.target;
         const id = target.dataset.id;
-
         if (target.classList.contains('btn-edit')) {
             const res = await fetch(`/api/articles/${id}`);
             const article = await res.json();
@@ -180,11 +172,9 @@ function handleArticleManagement(token) {
             document.getElementById('article-content').value = article.content;
             document.getElementById('article-author').value = article.author;
             document.getElementById('article-published').checked = article.published;
-            document.getElementById('article-form').scrollIntoView({ behavior: 'smooth' });
         }
-
         if (target.classList.contains('btn-delete')) {
-            if (!confirm('Are you sure you want to delete this article?')) return;
+            if (!confirm('Are you sure?')) return;
             await fetch(`/api/articles/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
@@ -213,8 +203,7 @@ function handleMessageManagement(token) {
                 <p>${msg.message}</p>
                 <p><strong>Status:</strong> ${msg.responded ? 'Responded' : 'New'}</p>
                 <button class="reply-btn" data-id="${msg._id}" data-email="${msg.email}" data-subject="${msg.subject}">Reply</button>
-            </div>
-        `).join('');
+            </div>`).join('');
     };
 
     messageList.addEventListener('click', (e) => {
@@ -250,5 +239,4 @@ function handleMessageManagement(token) {
     });
 
     loadMessages();
-    
 }

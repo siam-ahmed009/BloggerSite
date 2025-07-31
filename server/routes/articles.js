@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const Article = require('../models/Article');
-const { protect } = require('../middleware/authMiddleware'); // This path is now valid
+const { protect } = require('../middleware/authMiddleware');
 
 // Multer configuration
 const storage = multer.diskStorage({
@@ -16,6 +16,15 @@ const upload = multer({ storage });
 router.get('/', async (req, res) => {
     const articles = await Article.find({}).sort({ createdAt: -1 });
     res.json(articles);
+});
+
+router.get('/:id', async (req, res) => {
+    const article = await Article.findById(req.params.id);
+    if (article) {
+        res.json(article);
+    } else {
+        res.status(404).json({ message: 'Article not found' });
+    }
 });
 
 router.post('/', protect, upload.single('image'), async (req, res) => {
