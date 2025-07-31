@@ -1,18 +1,22 @@
 const jwt = require('jsonwebtoken');
+const asyncHandler = require('express-async-handler');
 
-module.exports = function(req, res, next) {
-    // Get token from the header
-    const token = req.header('Authorization')?.split(' ')[1]; // Expects "Bearer TOKEN"
-
+const protect = asyncHandler(async (req, res, next) => {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        try {
+            token = req.headers.authorization.split(' ')[1];
+            jwt.verify(token, process.env.JWT_SECRET);
+            next();
+        } catch (error) {
+            res.status(401);
+            throw new Error('Not authorized, token failed');
+        }
+    }
     if (!token) {
-        return res.status(401).json({ message: 'No token, authorization denied' });
+        res.status(401);
+        throw new Error('Not authorized, no token');
     }
+});
 
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_default_secret_key');
-        req.admin = decoded; // Add admin payload to the request object
-        next();
-    } catch (e) {
-        res.status(400).json({ message: 'Token is not valid' });
-    }
-};
+module.exports = { protect };

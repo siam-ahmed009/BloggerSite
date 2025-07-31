@@ -2,14 +2,14 @@ const express = require('express');
 const router = express.Router();
 const ContactMessage = require('../models/ContactMessage');
 const nodemailer = require('nodemailer');
-const { protect } = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/authMiddleware'); // Assuming your middleware is here
 
-// Nodemailer transporter setup - replace with your email provider details
+// Configure Nodemailer to send emails
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: 'gmail', // Or your email provider
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
+        user: process.env.EMAIL_USER, // Your email from .env
+        pass: process.env.EMAIL_PASS  // Your email app password from .env
     }
 });
 
@@ -18,7 +18,6 @@ const transporter = nodemailer.createTransport({
 // @access  Public
 router.post('/', async (req, res) => {
     const { name, email, subject, message } = req.body;
-
     if (!name || !email || !subject || !message) {
         return res.status(400).json({ message: 'Please fill out all fields.' });
     }
@@ -27,23 +26,22 @@ router.post('/', async (req, res) => {
         const newMessage = new ContactMessage({ name, email, subject, message });
         await newMessage.save();
 
-        // Email to admin
+        // Send email notification to the admin
         const mailOptions = {
             from: `"${name}" <${email}>`,
-            to: process.env.ADMIN_EMAIL,
-            subject: `New Message from BloggerSite: ${subject}`,
-            html: `<p>You have a new contact request.</p>
-                   <h3>Contact Details</h3>
+            to: process.env.ADMIN_EMAIL, // Admin's email from .env
+            subject: `New Contact Form Message: ${subject}`,
+            html: `<p>You have a new message from your website's contact form.</p>
+                   <h3>Details:</h3>
                    <ul>
-                     <li>Name: ${name}</li>
-                     <li>Email: ${email}</li>
+                     <li><strong>Name:</strong> ${name}</li>
+                     <li><strong>Email:</strong> ${email}</li>
                    </ul>
-                   <h3>Message</h3>
+                   <h3>Message:</h3>
                    <p>${message}</p>`
         };
-
         await transporter.sendMail(mailOptions);
-        res.status(201).json({ message: 'Message sent successfully!' });
+        res.status(201).json({ message: 'Message sent successfully! We will get back to you soon.' });
 
     } catch (error) {
         console.error(error);
@@ -51,7 +49,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// @desc    Get all contact messages
+// @desc    Get all contact messages (Admin only)
 // @route   GET /api/contact/messages
 // @access  Private
 router.get('/messages', protect, async (req, res) => {
@@ -63,21 +61,21 @@ router.get('/messages', protect, async (req, res) => {
     }
 });
 
-// @desc    Reply to a contact message
+// @desc    Reply to a contact message (Admin only)
 // @route   POST /api/contact/reply
 // @access  Private
 router.post('/reply', protect, async (req, res) => {
     const { to, subject, text, messageId } = req.body;
-
     try {
         const mailOptions = {
             from: process.env.ADMIN_EMAIL,
             to: to,
-            subject: `Re: ${subject}`,
+            subject: subject,
             text: text
         };
 
         await transporter.sendMail(mailOptions);
+        // Mark the message as responded in the database
         await ContactMessage.findByIdAndUpdate(messageId, { responded: true });
         res.status(200).json({ message: 'Reply sent successfully!' });
 

@@ -1,46 +1,37 @@
 const express = require('express');
-const SiteContent = require('../models/SiteContent');
-const auth = require('../middleware/authMiddleware'); // Our authentication gatekeeper
 const router = express.Router();
+const SiteContent = require('../models/SiteContent'); // Make sure this model exists
+const { protect } = require('../middleware/authMiddleware'); // Correctly import the 'protect' function
 
-// GET: Fetch the site content (Public)
-// We use findOne() because there will only ever be one document
+// @desc    Get site content
+// @route   GET /api/site-content
+// @access  Public
 router.get('/', async (req, res) => {
     try {
+        // Find the one and only content document, or create it if it doesn't exist
         let content = await SiteContent.findOne();
         if (!content) {
-            // If no content exists, create a default one to avoid errors
-            content = await new SiteContent({
-                heroTitle: 'Default Title',
-                heroDescription: 'Default Description.'
-            }).save();
+            content = await SiteContent.create({});
         }
         res.json(content);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching site content' });
+        res.status(500).json({ message: 'Server Error' });
     }
 });
 
-router.put('/', auth, async (req, res) => {
+// @desc    Update site content
+// @route   PUT /api/site-content
+// @access  Private (Admin Only)
+router.put('/', protect, async (req, res) => { // Use 'protect' as middleware here
     try {
-        // Find the single document for site content
-        let content = await SiteContent.findOne();
-
-        if (content) {
-            // If it exists, update it with the data from the form
-            Object.assign(content, req.body);
-        } else {
-            // If it doesn't exist for some reason, create a new one
-            content = new SiteContent(req.body);
-        }
-
-        const updatedContent = await content.save();
+        const updatedContent = await SiteContent.findOneAndUpdate({}, req.body, {
+            new: true,
+            upsert: true // Creates the document if it doesn't exist
+        });
         res.json(updatedContent);
-
     } catch (error) {
-        // Log the full error on the server for debugging
-        console.error("Error saving site content:", error); 
-        res.status(400).json({ message: 'Error updating site content' });
+        res.status(400).json({ message: 'Error updating content' });
     }
 });
+
 module.exports = router;

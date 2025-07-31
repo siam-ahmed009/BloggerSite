@@ -1,23 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
-
-    // --- 1. Universal Logic (Always runs) ---
-    handleMobileMenu();
-    handleContactForm();
-
-    // --- 2. Page-Specific Logic ---
-    // We check which page we are on and run only the necessary code.
-    if (document.getElementById('articles-container')) { // This ID is on the homepage
-        handleHomePage();
-    }
-    if (document.querySelector('.articles-container.articles-grid')) { // This class is on the articles page
+    // --- Run code based on the current page ---
+    if (document.querySelector('.articles-container.articles-grid')) {
         handleArticlesPage();
     }
-    // You can add more else if blocks for other pages like about.html if they need specific JS
+    // You can add more checks for other pages if needed. For example:
+    // if (document.getElementById('homepage-specific-element')) { handleHomePage(); }
+
+    // Always run these universal handlers
+    handleMobileMenu();
+    handleContactForm();
 });
 
-
 /**
- * Handles the mobile menu and overlay functionality.
+ * Manages the mobile menu and overlay functionality.
  */
 function handleMobileMenu() {
     const mobileMenuButton = document.getElementById('mobile-menu-button');
@@ -25,7 +20,10 @@ function handleMobileMenu() {
     const closeMenuButton = document.getElementById('close-menu-button');
     const menuOverlay = document.getElementById('menu-overlay');
 
-    if (!mobileMenu || !menuOverlay) return;
+    // Exit if essential elements don't exist
+    if (!mobileMenuButton || !mobileMenu || !closeMenuButton || !menuOverlay) {
+        return;
+    }
 
     const toggleMenu = (event) => {
         if (event) event.preventDefault();
@@ -38,9 +36,9 @@ function handleMobileMenu() {
         menuOverlay.classList.remove('active');
     };
 
-    if (mobileMenuButton) mobileMenuButton.addEventListener('click', toggleMenu);
-    if (closeMenuButton) closeMenuButton.addEventListener('click', closeMenu);
-    if (menuOverlay) menuOverlay.addEventListener('click', closeMenu);
+    mobileMenuButton.addEventListener('click', toggleMenu);
+    closeMenuButton.addEventListener('click', closeMenu);
+    menuOverlay.addEventListener('click', closeMenu);
 }
 
 /**
@@ -53,23 +51,34 @@ function handleContactForm() {
     contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formMessage = document.getElementById('form-message');
+        const submitButton = contactForm.querySelector('button[type="submit"]');
+
+        // Combine first and last name
         const firstName = document.getElementById('cf-firstName').value;
         const lastName = document.getElementById('cf-lastName').value;
         const name = `${firstName} ${lastName}`.trim();
 
         const formData = {
-            name,
+            name: name,
             email: document.getElementById('cf-email').value,
             subject: document.getElementById('cf-subject').value,
             message: document.getElementById('cf-message').value,
         };
 
+        // Disable button to prevent multiple submissions
+        submitButton.disabled = true;
+        submitButton.textContent = 'Sending...';
+        formMessage.style.display = 'none'; // Hide previous messages
+
         try {
             const response = await fetch('http://localhost:5000/api/contact', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                },
                 body: JSON.stringify(formData),
             });
+
             const result = await response.json();
             formMessage.style.display = 'block';
 
@@ -78,108 +87,64 @@ function handleContactForm() {
                 formMessage.style.color = 'green';
                 contactForm.reset();
             } else {
-                formMessage.textContent = result.message || 'An error occurred.';
-                formMessage.style.color = 'red';
+                throw new Error(result.message || 'An unknown error occurred.');
             }
         } catch (error) {
-            formMessage.style.display = 'block';
-            formMessage.textContent = 'Network error. Please try again.';
+            formMessage.textContent = error.message;
             formMessage.style.color = 'red';
+        } finally {
+            // Re-enable the button after the process is complete
+            submitButton.disabled = false;
+            submitButton.textContent = 'Submit';
         }
     });
 }
 
-
 /**
- * Fetches and displays the latest 4 articles on the homepage.
- */
-async function handleHomePage() {
-    const container = document.getElementById('articles-container');
-    if (!container) return;
-
-    try {
-        const response = await fetch('http://localhost:5000/api/articles');
-        if (!response.ok) throw new Error('Failed to load articles.');
-        const allArticles = await response.json();
-        
-        // Display only the first 4 articles
-        const articlesToDisplay = allArticles.slice(0, 4);
-
-        container.innerHTML = articlesToDisplay.map(article => `
-            <div class="article-card">
-                <div class="article-image-wrapper">
-                    <img src="http://localhost:5000${article.image}" alt="${article.title}" class="article-image">
-                </div>
-                <div class="article-content">
-                    <h3>${article.title}</h3>
-                    <p>${article.content.substring(0, 100)}...</p>
-                    <div class="article-actions">
-                        <a href="#" class="read-more">Read More</a>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-
-    } catch (error) {
-        console.error('Homepage article load error:', error);
-        container.innerHTML = '<p>Could not load articles.</p>';
-    }
-}
-
-
-/**
- * Handles the logic for the main Articles page, including filtering.
+ * Manages the Articles page, including fetching and filtering articles.
  */
 async function handleArticlesPage() {
     const container = document.querySelector('.articles-container.articles-grid');
     const filterButtons = document.querySelectorAll('.filter-buttons button');
-    if (!container || filterButtons.length === 0) return;
+    if (!container || !filterButtons.length) return;
 
-    let allArticles = []; // Store a master list of articles
+    let allArticles = [];
 
-    // Function to render articles to the page
     const displayArticles = (articles) => {
-        container.innerHTML = ''; // Clear existing
-        articles.forEach(article => {
-            const card = document.createElement('div');
-            card.className = 'article-card';
-            card.innerHTML = `
-                <div class="article-image-wrapper">
-                    <img src="http://localhost:5000${article.image}" alt="${article.title}" class="article-image">
-                </div>
-                <div class="article-content">
-                    <h3>${article.title}</h3>
-                     <p>${article.content.substring(0, 100)}...</p>
-                </div>
-            `;
-            container.appendChild(card);
-        });
+        if (articles.length === 0) {
+            container.innerHTML = '<p>No articles found.</p>';
+            return;
+        }
+        container.innerHTML = articles.map(article => `
+            <div class="article-card">
+                <img src="http://localhost:5000${article.image}" alt="${article.title}" style="width:100%; height:auto; aspect-ratio: 16/9; object-fit: cover;">
+                <h3>${article.title}</h3>
+                <p>${article.content.substring(0, 100)}...</p>
+            </div>
+        `).join('');
     };
 
-    // Add click event listeners to filter buttons
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
             const filter = button.dataset.filter;
-            let filteredArticles = allArticles;
-
-            if (filter === 'published') {
-                filteredArticles = allArticles.filter(a => a.published === true);
+            if (filter === 'all') {
+                displayArticles(allArticles);
+            } else if (filter === 'published') {
+                displayArticles(allArticles.filter(a => a.published));
             } else if (filter === 'unpublished') {
-                filteredArticles = allArticles.filter(a => a.published !== true);
+                displayArticles(allArticles.filter(a => !a.published));
             }
-            displayArticles(filteredArticles);
         });
     });
 
-    // Initial fetch of all articles
     try {
+        container.innerHTML = '<p>Loading articles...</p>';
         const response = await fetch('http://localhost:5000/api/articles');
-        if (!response.ok) throw new Error('Failed to fetch articles.');
+        if (!response.ok) throw new Error('Could not connect to the server.');
         
         allArticles = await response.json();
-        displayArticles(allArticles); // Display all by default
+        displayArticles(allArticles);
     } catch (error) {
-        console.error('Articles page load error:', error);
-        container.innerHTML = '<p>Error loading articles.</p>';
+        container.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
     }
 }

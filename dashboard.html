@@ -4,23 +4,16 @@
     <meta charset="UTF-8">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="style.css">
-    </head>
+</head>
 <body class="admin-portal">
     <div class="admin-dashboard-layout">
         <aside class="admin-sidebar">
-            <a href="home.html" class="brand-logo"><img src="img/Logo.png" alt="Logo"></a>
-            <nav>
-                <a href="#" class="admin-nav-link active">Dashboard</a>
-                 <a href="home.html" target="_blank" class="admin-nav-link">View Site</a>
-            </nav>
-            <button id="logout-btn" class="admin-nav-link logout-btn">Logout</button>
+             <a href="home.html" class="brand-logo"><img src="img/Logo.png" alt="Logo"></a>
+             <nav><a href="#" class="admin-nav-link active">Dashboard</a></nav>
+             <button id="logout-btn" class="admin-nav-link logout-btn">Logout</button>
         </aside>
-
         <main class="admin-main-content">
-            <header class="admin-header">
-                <h1>Dashboard</h1>
-            </header>
-
+            <header class="admin-header"><h1>Dashboard</h1></header>
             <div class="dashboard-nav">
                 <label for="section-selector">Select Section to Edit:</label>
                 <select id="section-selector">
@@ -29,38 +22,42 @@
                     <option value="messages-section">Messages</option>
                 </select>
             </div>
-
             <section id="site-content-section" class="dashboard-section">
+                <h2>Manage Website Content</h2>
                 <form id="site-content-form" class="cf-form">
                     <h3>Hero Section</h3>
-                     <div class="cf-group"><label for="heroTitle">Hero Title</label><input type="text" id="heroTitle"></div>
-                     <button type="submit" class="btn-primary">Save All Content</button>
+                    <div class="cf-group"><label for="heroTitle">Hero Title</label><input type="text" id="heroTitle"></div>
+                    <div class="cf-group"><label for="heroDescription">Hero Description</label><textarea id="heroDescription" rows="3"></textarea></div>
+                    <hr>
+                    <h3>About Section</h3>
+                    <div class="cf-group"><label for="aboutTitle">About Title</label><input type="text" id="aboutTitle"></div>
+                     <div class="cf-group"><label for="aboutDescription1">About Paragraph 1</label><textarea id="aboutDescription1" rows="4"></textarea></div>
+                    <hr>
+                     <h3>Footer Section</h3>
+                     <div class="cf-group"><label for="footerAboutText">Footer "About" Text</label><textarea id="footerAboutText" rows="3"></textarea></div>
+                    <button type="submit" class="btn-primary">Save All Content</button>
                 </form>
             </section>
-
             <section id="articles-section" class="dashboard-section hidden">
-                <h3>Manage Articles</h3>
+                <h2>Manage Articles</h2>
                 <form id="article-form" class="cf-form">
-                    <h4>Add/Edit Article</h4>
+                    <h3>Add/Edit Article</h3>
                     <input type="hidden" id="article-id">
                     <div class="cf-group"><label for="article-title">Title</label><input type="text" id="article-title" required></div>
                     <div class="cf-group"><label for="article-author">Author</label><input type="text" id="article-author" required></div>
                     <div class="cf-group"><label for="article-content">Content</label><textarea id="article-content" rows="5" required></textarea></div>
-                    <div class="cf-group"><label for="article-image">Article Image</label><input type="file" id="article-image" accept="image/*"></div>
-                    <div class="cf-group"><label><input type="checkbox" id="article-published"> Published</label></div>
+                    <div class="cf-group"><label for="article-image">Article Image</label><input type="file" id="article-image" name="image" accept="image/*"></div>
+                    <div class="cf-group"><label><input type="checkbox" id="article-published" name="published"> Published</label></div>
                     <button type="submit">Save Article</button>
-                    <button type="button" id="clear-article-form-btn">Clear Form</button>
                 </form>
                 <div id="article-list" class="admin-table-container"></div>
             </section>
-
             <section id="messages-section" class="dashboard-section hidden">
-                <h3>Contact Messages</h3>
+                <h2>Contact Messages</h2>
                 <div id="message-list"></div>
             </section>
         </main>
     </div>
-
     <div id="reply-modal" class="modal" style="display:none;">
         <div class="modal-content">
             <span class="close-button">&times;</span>
@@ -74,7 +71,6 @@
             </form>
         </div>
     </div>
-
     <script src="admin.js"></script>
 </body>
 </html>
