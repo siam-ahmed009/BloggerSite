@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('authToken');
-    const API_BASE_URL = 'http://localhost:5000'; // Use a consistent base URL
+    const API_BASE_URL = 'http://localhost:5000';
 
-    if (!token && !window.location.pathname.endsWith('index.html') && window.location.pathname !== '/') {
+    if (!token && !window.location.pathname.endsWith('index.html')) {
         window.location.href = 'index.html';
         return;
     }
@@ -14,22 +14,53 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = 'index.html';
         });
     }
+
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/admin/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || 'Login failed.');
+                localStorage.setItem('authToken', data.token);
+                window.location.href = 'dashboard.html';
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+    }
     
     if (window.location.pathname.endsWith('dashboard.html')) {
-        const sectionSelector = document.getElementById('section-selector');
+        const navLinks = document.querySelectorAll('.admin-nav-link[data-section]');
         const sections = document.querySelectorAll('.dashboard-section');
 
-        sectionSelector.addEventListener('change', () => {
-            sections.forEach(s => s.classList.add('hidden'));
-            document.getElementById(sectionSelector.value)?.classList.remove('hidden');
-        });
-        sectionSelector.dispatchEvent(new Event('change'));
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionId = link.getAttribute('data-section');
+                
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
 
+                sections.forEach(s => s.classList.add('hidden'));
+                document.getElementById(sectionId)?.classList.remove('hidden');
+            });
+        });
+
+        // Initialize all dashboard modules
         initArticleManagement(token, API_BASE_URL);
         initMessageManagement(token, API_BASE_URL);
         initSiteContentForm(token, API_BASE_URL);
     }
 });
+
 
 function initSiteContentForm(token, baseUrl) {
     const form = document.getElementById('site-content-form');

@@ -100,46 +100,70 @@ function handleContactForm() {
 
 async function handleArticlesPage() {
     const container = document.querySelector('.articles-container.articles-grid');
-    if (!container) return;
-
-    try {
-        const response = await fetch('http://localhost:5000/api/articles');
-        if (!response.ok) throw new Error('Could not load articles.');
-        
-        const allArticles = await response.json();
-        const publishedArticles = allArticles.filter(a => a.published);
-
-        container.innerHTML = publishedArticles.length ? publishedArticles.map(article => `
-            <div class="article-card">
-                <img src="http://localhost:5000${article.image}" alt="${article.title}" style="width:100%;">
-                <h3>${article.title}</h3>
-                <p>${article.content.substring(0, 100)}...</p>
-            </div>
-        `).join('') : '<p>No articles have been published yet.</p>';
-    } catch (error) {
-        container.innerHTML = `<p style="color:red;">${error.message}</p>`;
+    const filterButtons = document.querySelectorAll('.filter-buttons button');
+    
+    if (!container) {
+        console.error('Article container not found!');
+        return;
     }
 
+    let allArticles = []; // সার্ভার থেকে পাওয়া সব আর্টিকেল এখানে স্টোর করা হবে
+
+    // এই ফাংশনটি আর্টিকেলগুলোকে HTML-এ প্রদর্শন করে
+    const displayArticles = (articles) => {
+        if (articles.length === 0) {
+            container.innerHTML = '<p>No articles found matching the filter.</p>';
+            return;
+        }
+
+        container.innerHTML = articles.map(article => `
+            <div class="article-card">
+                <div class="article-image-wrapper">
+                    <img src="http://localhost:5000${article.image}" alt="${article.title}" class="article-image">
+                </div>
+                <div class="article-content">
+                    <h3>${article.title}</h3>
+                    <p>${article.content.substring(0, 100)}...</p>
+                    <div class="article-actions">
+                       <a href="#" class="read-more">Read More</a>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    };
+
+    // ফিল্টার বাটনগুলোতে ইভেন্ট লিসেনার যোগ করা
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
             const filter = button.dataset.filter;
-            if (filter === 'all') {
-                displayArticles(allArticles);
-            } else if (filter === 'published') {
-                displayArticles(allArticles.filter(a => a.published));
+            let filteredArticles = allArticles;
+
+            if (filter === 'published') {
+                filteredArticles = allArticles.filter(a => a.published === true);
             } else if (filter === 'unpublished') {
-                displayArticles(allArticles.filter(a => !a.published));
+                filteredArticles = allArticles.filter(a => a.published === false);
             }
+            // 'all' এর জন্য কোনো ফিল্টারের প্রয়োজন নেই, কারণ `filteredArticles` এ ডিফল্টভাবে সব আর্টিকেল থাকে
+
+            displayArticles(filteredArticles);
         });
     });
 
+    // সার্ভার থেকে আর্টিকেল লোড করা
     try {
+        container.innerHTML = '<p>Loading articles...</p>';
         const response = await fetch('http://localhost:5000/api/articles');
-        if (!response.ok) throw new Error('Failed to load articles from server.');
+        if (!response.ok) {
+            throw new Error('Could not connect to the server to load articles.');
+        }
+        
         allArticles = await response.json();
-        // Initially display only published articles on the public site
-        displayArticles(allArticles.filter(a => a.published));
+        
+        // প্রাথমিকভাবে শুধুমাত্র পাবলিশড আর্টিকেলগুলো দেখানো হবে
+        const publishedArticles = allArticles.filter(a => a.published === true);
+        displayArticles(publishedArticles);
     } catch (error) {
-        container.innerHTML = `<p style="color:red;">${error.message}</p>`;
+        console.error('Article load error:', error);
+        container.innerHTML = `<p style="color: red;">${error.message}</p>`;
     }
 }
