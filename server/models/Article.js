@@ -1,14 +1,12 @@
 const mongoose = require('mongoose');
 
 const articleSchema = new mongoose.Schema({
-    title: String,
-    description: String,
-    fullDescription: String,
-    imageSrc: String,
-    date: Date,
-    status: String
+    title: { type: String, required: true },
+    content: { type: String, required: true },
+    author: { type: String, required: true },
+    image: { type: String, default: '/img/default.jpg' },
+    published: { type: Boolean, default: false },
+    createdAt: { type: Date, default: Date.now }
 });
 
-const Article = mongoose.model('Article', articleSchema);
-
-module.exports = Article;
+module.exports = mongoose.model('Article', articleSchema);

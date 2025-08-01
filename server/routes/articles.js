@@ -5,34 +5,20 @@ const path = require('path');
 const Article = require('../models/Article');
 const { protect } = require('../middleware/authMiddleware');
 
-// Multer configuration
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, 'server/uploads/'),
-    filename: (req, file, cb) => cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`)
+    filename: (req, file, cb) => cb(null, `article-${Date.now()}${path.extname(file.originalname)}`)
 });
 const upload = multer({ storage });
 
-// Routes
-router.get('/', async (req, res) => {
-    const articles = await Article.find({}).sort({ createdAt: -1 });
-    res.json(articles);
-});
-
-router.get('/:id', async (req, res) => {
-    const article = await Article.findById(req.params.id);
-    if (article) {
-        res.json(article);
-    } else {
-        res.status(404).json({ message: 'Article not found' });
-    }
-});
+router.get('/', async (req, res) => res.json(await Article.find({}).sort({ createdAt: -1 })));
+router.get('/:id', async (req, res) => res.json(await Article.findById(req.params.id)));
 
 router.post('/', protect, upload.single('image'), async (req, res) => {
     const { title, content, author, published } = req.body;
-    const imagePath = req.file ? `/uploads/${req.file.filename}` : '/img/default.jpg';
-    const article = new Article({ title, content, author, image: imagePath, published: published === 'true' });
-    const createdArticle = await article.save();
-    res.status(201).json(createdArticle);
+    const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+    const article = await Article.create({ title, content, author, published: published === 'true', image });
+    res.status(201).json(article);
 });
 
 router.put('/:id', protect, upload.single('image'), async (req, res) => {
@@ -43,24 +29,18 @@ router.put('/:id', protect, upload.single('image'), async (req, res) => {
         article.content = content;
         article.author = author;
         article.published = published === 'true';
-        if (req.file) {
-            article.image = `/uploads/${req.file.filename}`;
-        }
+        if (req.file) article.image = `/uploads/${req.file.filename}`;
         const updatedArticle = await article.save();
         res.json(updatedArticle);
     } else {
-        res.status(404).send('Article not found');
+        res.status(404).json({ message: 'Article not found' });
     }
 });
 
 router.delete('/:id', protect, async (req, res) => {
-    const article = await Article.findById(req.params.id);
-    if (article) {
-        await article.deleteOne();
-        res.json({ message: 'Article removed' });
-    } else {
-        res.status(404).send('Article not found');
-    }
+    const result = await Article.deleteOne({ _id: req.params.id });
+    if (result.deletedCount > 0) res.json({ message: 'Article removed' });
+    else res.status(404).json({ message: 'Article not found' });
 });
 
 module.exports = router;

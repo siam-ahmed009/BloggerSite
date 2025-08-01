@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('authToken');
+    const API_BASE_URL = 'http://localhost:5000'; // Use a consistent base URL
 
     if (!token && !window.location.pathname.endsWith('index.html') && window.location.pathname !== '/') {
         window.location.href = 'index.html';
         return;
     }
 
-    // --- UNIVERSAL ADMIN LOGIC ---
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
@@ -14,78 +14,42 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = 'index.html';
         });
     }
-
-    // --- LOGIN PAGE LOGIC ---
-    const loginForm = document.getElementById('login-form');
-    if (loginForm) {
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorP = document.getElementById('login-error');
-
-            try {
-                const response = await fetch('http://localhost:5000/api/admin/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.message || 'Login failed.');
-                
-                localStorage.setItem('authToken', data.token);
-                window.location.href = 'dashboard.html';
-            } catch (error) {
-                errorP.textContent = error.message;
-                errorP.style.display = 'block';
-            }
-        });
-    }
     
-    // --- DASHBOARD PAGE LOGIC ---
     if (window.location.pathname.endsWith('dashboard.html')) {
         const sectionSelector = document.getElementById('section-selector');
         const sections = document.querySelectorAll('.dashboard-section');
 
         sectionSelector.addEventListener('change', () => {
-            sections.forEach(section => section.classList.add('hidden'));
-            const selectedSection = document.getElementById(sectionSelector.value);
-            if (selectedSection) {
-                selectedSection.classList.remove('hidden');
-            }
+            sections.forEach(s => s.classList.add('hidden'));
+            document.getElementById(sectionSelector.value)?.classList.remove('hidden');
         });
-        
         sectionSelector.dispatchEvent(new Event('change'));
 
-        handleArticleManagement(token);
-        handleMessageManagement(token);
-        handleSiteContentForm(token);
+        initArticleManagement(token, API_BASE_URL);
+        initMessageManagement(token, API_BASE_URL);
+        initSiteContentForm(token, API_BASE_URL);
     }
 });
 
-// --- SITE CONTENT MANAGEMENT ---
-function handleSiteContentForm(token) {
+function initSiteContentForm(token, baseUrl) {
     const form = document.getElementById('site-content-form');
     if (!form) return;
     const fields = ['heroTitle', 'heroDescription', 'aboutTitle', 'aboutDescription1', 'footerAboutText'];
 
-    fetch('/api/site-content').then(res => res.json()).then(data => {
+    fetch(`${baseUrl}/api/site-content`).then(res => res.json()).then(data => {
         fields.forEach(field => {
-            const element = document.getElementById(field);
-            if (element && data) element.value = data[field] || '';
+            const el = document.getElementById(field);
+            if (el && data) el.value = data[field] || '';
         });
-    }).catch(err => console.error('Failed to load site content:', err));
+    }).catch(err => console.error('Site Content Load Error:', err));
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const body = {};
-        fields.forEach(field => {
-            const element = document.getElementById(field);
-            if(element) body[field] = element.value;
-        });
+        fields.forEach(f => { body[f] = document.getElementById(f)?.value; });
 
         try {
-            const res = await fetch('/api/site-content', {
+            const res = await fetch(`${baseUrl}/api/site-content`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(body)
@@ -98,105 +62,83 @@ function handleSiteContentForm(token) {
     });
 }
 
-// --- ARTICLE MANAGEMENT ---
-function handleArticleManagement(token) {
-    const articleForm = document.getElementById('article-form');
-    const articleList = document.getElementById('article-list');
-    const articleIdInput = document.getElementById('article-id');
-
-    const resetArticleForm = () => {
-        articleForm.reset();
-        articleIdInput.value = '';
-    };
+function initArticleManagement(token, baseUrl) {
+    const form = document.getElementById('article-form');
+    const list = document.getElementById('article-list');
+    const idInput = document.getElementById('article-id');
+    const resetForm = () => { form.reset(); idInput.value = ''; };
 
     const loadArticles = async () => {
-        const res = await fetch('/api/articles');
+        const res = await fetch(`${baseUrl}/api/articles`);
         const articles = await res.json();
-        articleList.innerHTML = `
+        list.innerHTML = `
             <table class="admin-table">
-                <thead><tr><th>Title</th><th>Author</th><th>Published</th><th>Actions</th></tr></thead>
+                <thead><tr><th>Title</th><th>Published</th><th>Actions</th></tr></thead>
                 <tbody>
-                    ${articles.map(article => `
+                    ${articles.map(a => `
                         <tr>
-                            <td>${article.title}</td>
-                            <td>${article.author || 'N/A'}</td>
-                            <td>${article.published ? 'Yes' : 'No'}</td>
+                            <td>${a.title}</td>
+                            <td>${a.published ? 'Yes' : 'No'}</td>
                             <td class="action-buttons">
-                                <button class="btn-edit" data-id="${article._id}">Edit</button>
-                                <button class="btn-delete" data-id="${article._id}">Delete</button>
+                                <button class="btn-edit" data-id="${a._id}">Edit</button>
+                                <button class="btn-delete" data-id="${a._id}">Delete</button>
                             </td>
-                        </tr>
-                    `).join('')}
+                        </tr>`).join('')}
                 </tbody>
             </table>`;
     };
 
-    articleForm.addEventListener('submit', async (e) => {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const id = articleIdInput.value;
-        const formData = new FormData();
-        formData.append('title', document.getElementById('article-title').value);
-        formData.append('content', document.getElementById('article-content').value);
-        formData.append('author', document.getElementById('article-author').value);
-        formData.append('published', document.getElementById('article-published').checked);
-        const imageFile = document.getElementById('article-image').files[0];
-        if (imageFile) {
-            formData.append('image', imageFile);
-        }
-
-        const url = id ? `/api/articles/${id}` : '/api/articles';
+        const id = idInput.value;
+        const formData = new FormData(form);
+        const url = id ? `${baseUrl}/api/articles/${id}` : `${baseUrl}/api/articles`;
         const method = id ? 'PUT' : 'POST';
 
         try {
-            const res = await fetch(url, {
-                method: method,
-                headers: { 'Authorization': `Bearer ${token}` },
-                body: formData
+            const res = await fetch(url, { 
+                method, 
+                headers: { 'Authorization': `Bearer ${token}` }, // No 'Content-Type'
+                body: formData 
             });
             if (!res.ok) throw new Error((await res.json()).message || 'Failed to save article.');
-            resetArticleForm();
+            resetForm();
             loadArticles();
         } catch (error) {
             alert(error.message);
         }
     });
 
-    articleList.addEventListener('click', async (e) => {
-        const target = e.target;
-        const id = target.dataset.id;
-        if (target.classList.contains('btn-edit')) {
-            const res = await fetch(`/api/articles/${id}`);
-            const article = await res.json();
-            articleIdInput.value = article._id;
-            document.getElementById('article-title').value = article.title;
-            document.getElementById('article-content').value = article.content;
-            document.getElementById('article-author').value = article.author;
-            document.getElementById('article-published').checked = article.published;
-        }
-        if (target.classList.contains('btn-delete')) {
+    list.addEventListener('click', async (e) => {
+        const id = e.target.dataset.id;
+        if (e.target.matches('.btn-edit')) {
+            const res = await fetch(`${baseUrl}/api/articles/${id}`);
+            const a = await res.json();
+            idInput.value = a._id;
+            document.getElementById('article-title').value = a.title;
+            document.getElementById('article-content').value = a.content;
+            document.getElementById('article-author').value = a.author;
+            document.getElementById('article-published').checked = a.published;
+        } else if (e.target.matches('.btn-delete')) {
             if (!confirm('Are you sure?')) return;
-            await fetch(`/api/articles/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            await fetch(`${baseUrl}/api/articles/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
             loadArticles();
         }
     });
-
     loadArticles();
 }
 
-// --- MESSAGE MANAGEMENT ---
-function handleMessageManagement(token) {
-    const messageList = document.getElementById('message-list');
+
+function initMessageManagement(token, baseUrl) {
+    const list = document.getElementById('message-list');
     const modal = document.getElementById('reply-modal');
-    const replyForm = document.getElementById('reply-form');
+    const form = document.getElementById('reply-form');
     const closeModalBtn = modal.querySelector('.close-button');
 
     const loadMessages = async () => {
-        const res = await fetch('/api/contact/messages', { headers: { 'Authorization': `Bearer ${token}` }});
+        const res = await fetch(`${baseUrl}/api/contact/messages`, { headers: { 'Authorization': `Bearer ${token}` } });
         const messages = await res.json();
-        messageList.innerHTML = messages.map(msg => `
+        list.innerHTML = messages.map(msg => `
             <div class="message-item">
                 <p><strong>From:</strong> ${msg.name} (${msg.email})</p>
                 <p><strong>Subject:</strong> ${msg.subject}</p>
@@ -206,8 +148,8 @@ function handleMessageManagement(token) {
             </div>`).join('');
     };
 
-    messageList.addEventListener('click', (e) => {
-        if (e.target.classList.contains('reply-btn')) {
+    list.addEventListener('click', e => {
+        if (e.target.matches('.reply-btn')) {
             modal.style.display = 'block';
             document.getElementById('reply-message-id').value = e.target.dataset.id;
             document.getElementById('reply-to-email').value = e.target.dataset.email;
@@ -215,28 +157,24 @@ function handleMessageManagement(token) {
         }
     });
 
-    replyForm.addEventListener('submit', async (e) => {
+    form.addEventListener('submit', async e => {
         e.preventDefault();
-        const replyData = {
+        const data = {
             messageId: document.getElementById('reply-message-id').value,
             to: document.getElementById('reply-to-email').value,
             subject: document.getElementById('reply-subject').value,
             text: document.getElementById('reply-text').value
         };
-        await fetch('/api/contact/reply', {
+        await fetch(`${baseUrl}/api/contact/reply`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify(replyData)
+            body: JSON.stringify(data)
         });
         modal.style.display = 'none';
-        replyForm.reset();
+        form.reset();
         loadMessages();
     });
     
     closeModalBtn.addEventListener('click', () => modal.style.display = 'none');
-    window.addEventListener('click', (e) => {
-        if (e.target === modal) modal.style.display = 'none';
-    });
-
     loadMessages();
 }

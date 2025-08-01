@@ -8,7 +8,7 @@ router.post('/login', (req, res) => {
     const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'password';
 
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-        const token = jwt.sign({ id: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: 'admin' }, process.env.JWT_SECRET, { expiresIn: '8h' });
         res.json({ token });
     } else {
         res.status(401).json({ message: 'Invalid credentials' });

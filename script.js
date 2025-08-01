@@ -1,9 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Run code based on the current page ---
     if (document.querySelector('.articles-container.articles-grid')) {
         handleArticlesPage();
-    }
-    // You can add more checks for other pages if needed. For example:
+}
     // if (document.getElementById('homepage-specific-element')) { handleHomePage(); }
 
     // Always run these universal handlers
@@ -100,29 +98,27 @@ function handleContactForm() {
     });
 }
 
-/**
- * Manages the Articles page, including fetching and filtering articles.
- */
 async function handleArticlesPage() {
     const container = document.querySelector('.articles-container.articles-grid');
-    const filterButtons = document.querySelectorAll('.filter-buttons button');
-    if (!container || !filterButtons.length) return;
+    if (!container) return;
 
-    let allArticles = [];
+    try {
+        const response = await fetch('http://localhost:5000/api/articles');
+        if (!response.ok) throw new Error('Could not load articles.');
+        
+        const allArticles = await response.json();
+        const publishedArticles = allArticles.filter(a => a.published);
 
-    const displayArticles = (articles) => {
-        if (articles.length === 0) {
-            container.innerHTML = '<p>No articles found.</p>';
-            return;
-        }
-        container.innerHTML = articles.map(article => `
+        container.innerHTML = publishedArticles.length ? publishedArticles.map(article => `
             <div class="article-card">
-                <img src="http://localhost:5000${article.image}" alt="${article.title}" style="width:100%; height:auto; aspect-ratio: 16/9; object-fit: cover;">
+                <img src="http://localhost:5000${article.image}" alt="${article.title}" style="width:100%;">
                 <h3>${article.title}</h3>
                 <p>${article.content.substring(0, 100)}...</p>
             </div>
-        `).join('');
-    };
+        `).join('') : '<p>No articles have been published yet.</p>';
+    } catch (error) {
+        container.innerHTML = `<p style="color:red;">${error.message}</p>`;
+    }
 
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -138,13 +134,12 @@ async function handleArticlesPage() {
     });
 
     try {
-        container.innerHTML = '<p>Loading articles...</p>';
         const response = await fetch('http://localhost:5000/api/articles');
-        if (!response.ok) throw new Error('Could not connect to the server.');
-        
+        if (!response.ok) throw new Error('Failed to load articles from server.');
         allArticles = await response.json();
-        displayArticles(allArticles);
+        // Initially display only published articles on the public site
+        displayArticles(allArticles.filter(a => a.published));
     } catch (error) {
-        container.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+        container.innerHTML = `<p style="color:red;">${error.message}</p>`;
     }
 }

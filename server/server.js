@@ -6,34 +6,30 @@ const path = require('path');
 
 dotenv.config();
 
-// Route imports
-const adminRoutes = require('./routes/admin');
-const articleRoutes = require('./routes/articles');
-const siteContentRoutes = require('./routes/siteContent');
-const contactRoutes = require('./routes/contact');
-
 const app = express();
 
-// Middleware
+// --- Middleware ---
 app.use(cors());
-app.use(express.json()); // Replaces bodyParser.json()
-app.use(express.urlencoded({ extended: false })); // Replaces bodyParser.urlencoded()
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
-// Serve static files from the root project folder
+// --- Static Folders ---
+// Serve frontend files (HTML, CSS, JS) from the root project directory
 app.use(express.static(path.join(__dirname, '..')));
-// Serve uploaded images
+// Serve uploaded images from the 'server/uploads' directory so they can be viewed
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// DB Connection
+// --- Database Connection ---
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.log('MongoDB connection error:', err));
+  .then(() => console.log('MongoDB Connected...'))
+  .catch(err => console.error('MongoDB Connection Error:', err));
 
-// API Routes
-app.use('/api/admin', adminRoutes);
-app.use('/api/articles', articleRoutes);
-app.use('/api/site-content', siteContentRoutes);
-app.use('/api/contact', contactRoutes);
+// --- API Routes ---
+app.use('/api/admin', require('./routes/admin'));
+app.use('/api/articles', require('./routes/articles'));
+app.use('/api/site-content', require('./routes/siteContent'));
+app.use('/api/contact', require('./routes/contact'));
 
+// --- Server Initialization ---
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

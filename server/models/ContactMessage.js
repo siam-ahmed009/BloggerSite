@@ -9,6 +9,4 @@ const contactMessageSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
-const ContactMessage = mongoose.model('ContactMessage', contactMessageSchema);
-
-module.exports = ContactMessage;
+module.exports = mongoose.model('ContactMessage', contactMessageSchema);
