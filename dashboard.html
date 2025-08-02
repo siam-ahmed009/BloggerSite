@@ -27,23 +27,36 @@
                 <p>Select an option from the sidebar to manage your website.</p>
             </section>
 
-            <section id="site-content-section" class="dashboard-section hidden">
-                <header class="admin-header"><h1>Manage Website Content</h1></header>
-                <form id="site-content-form" class="cf-form">
-                    <h3>Header / Hero Section</h3>
-                    <div class="cf-group"><label for="heroTitle">Hero Title</label><input type="text" id="heroTitle"></div>
-                    <div class="cf-group"><label for="heroDescription">Hero Description</label><textarea id="heroDescription" rows="3"></textarea></div>
-                    <hr>
-                    <h3>Article Section</h3>
-                     <div class="cf-group"><label for="aboutTitle">About Title</label><input type="text" id="aboutTitle"></div>
-                     <div class="cf-group"><label for="aboutDescription1">About Paragraph 1</label><textarea id="aboutDescription1" rows="4"></textarea></div>
-                    <hr>
-                     <h3>Footer Section</h3>
-                     <div class="cf-group"><label for="footerAboutText">Footer "About" Text</label><textarea id="footerAboutText" rows="3"></textarea></div>
-                    <button type="submit" class="btn-primary">Save All Content</button>
-                </form>
-            </section>
+           <section id="site-content-section" class="dashboard-section hidden">
+    <header class="admin-header"><h1>Manage Website Content</h1></header>
+    
+    <nav class="content-nav">
+        <button data-content-section="hero-section" class="content-nav-btn active">Header / Hero</button>
+        <button data-content-section="about-section" class="content-nav-btn">Article Section</button>
+        <button data-content-section="footer-section" class="content-nav-btn">Footer</button>
+    </nav>
 
+    <form id="site-content-form" class="cf-form">
+        <div class="content-panel" id="hero-section">
+            <h3>Header / Hero Section</h3>
+            <div class="cf-group"><label for="heroTitle">Hero Title</label><input type="text" id="heroTitle"></div>
+            <div class="cf-group"><label for="heroDescription">Hero Description</label><textarea id="heroDescription" rows="3"></textarea></div>
+        </div>
+        
+        <div class="content-panel hidden" id="about-section">
+            <h3>Article Section</h3>
+            <div class="cf-group"><label for="aboutTitle">About Title</label><input type="text" id="aboutTitle"></div>
+            <div class="cf-group"><label for="aboutDescription1">About Paragraph 1</label><textarea id="aboutDescription1" rows="4"></textarea></div>
+        </div>
+        
+        <div class="content-panel hidden" id="footer-section">
+            <h3>Footer Section</h3>
+            <div class="cf-group"><label for="footerAboutText">Footer "About" Text</label><textarea id="footerAboutText" rows="3"></textarea></div>
+        </div>
+        
+        <button type="submit" class="btn-primary">Save All Content</button>
+    </form>
+</section>
             <section id="articles-section" class="dashboard-section hidden">
                 <header class="admin-header"><h1>Add & Manage Articles</h1></header>
                 <form id="article-form" class="cf-form">

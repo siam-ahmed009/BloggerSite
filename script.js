@@ -1,17 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.querySelector('.articles-container.articles-grid')) {
-        handleArticlesPage();
-}
-    // if (document.getElementById('homepage-specific-element')) { handleHomePage(); }
-
-    // Always run these universal handlers
+//     if (document.querySelector('.articles-container.articles-grid')) {
+//         handleArticlesPage();
+// }
+    
     handleMobileMenu();
     handleContactForm();
+    handleArticlesPage();
 });
 
-/**
- * Manages the mobile menu and overlay functionality.
- */
 function handleMobileMenu() {
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
@@ -39,9 +35,79 @@ function handleMobileMenu() {
     menuOverlay.addEventListener('click', closeMenu);
 }
 
-/**
- * Handles the submission of the main contact form.
- */
+async function handleArticlesPage() {
+    const container = document.querySelector('.articles-container.articles-grid');
+    const filterButtons = document.querySelectorAll('.filter-buttons button');
+    
+    // যদি এই পেজটি আর্টিকেল পেজ না হয়, তাহলে এই ফাংশনটি কিছুই করবে না।
+    if (!container || !filterButtons.length) {
+        return;
+    }
+
+    let allArticles = []; // সার্ভার থেকে সব আর্টিকেল এখানে রাখা হবে
+
+    // এই ফাংশনটি আর্টিকেলগুলোকে HTML কার্ড হিসেবে প্রদর্শন করে
+    const displayArticles = (articles) => {
+        if (!articles || articles.length === 0) {
+            container.innerHTML = '<p>No articles found.</p>';
+            return;
+        }
+
+        container.innerHTML = articles.map(article => `
+            <div class="article-card">
+                <div class="article-image-wrapper">
+                    <img src="http://localhost:5000${article.image}" alt="${article.title}" class="article-image">
+                </div>
+                <div class="article-content">
+                    <h3>${article.title}</h3>
+                    <p>${article.content.substring(0, 120)}...</p>
+                    <a href="#" class="read-more">Read More</a>
+                </div>
+            </div>
+        `).join('');
+    };
+
+    // ফিল্টার বাটনগুলোর কার্যকারিতা
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const filter = button.dataset.filter;
+            // শুধুমাত্র পাবলিশড আর্টিকেলগুলো নিয়েই কাজ করা হবে
+            const publishedArticles = allArticles.filter(a => a.published);
+            let articlesToDisplay = [...publishedArticles]; // নতুন একটি অ্যারে তৈরি করা হলো
+
+            if (filter === 'newest') {
+                // নতুন আর্টিকেল আগে দেখানোর জন্য (default sort)
+                articlesToDisplay.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            } else if (filter === 'oldest') {
+                // পুরাতন আর্টিকেল আগে দেখানোর জন্য
+                articlesToDisplay.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+            }
+            // 'all' এর জন্য ডিফল্ট সর্টিং (newest) কাজ করবে
+            
+            displayArticles(articlesToDisplay);
+        });
+    });
+    // সার্ভার থেকে আর্টিকেল লোড এবং প্রদর্শন
+     try {
+        container.innerHTML = '<p>Loading articles, please wait...</p>';
+        const response = await fetch('http://localhost:5000/api/articles');
+        
+        if (!response.ok) {
+            throw new Error(`Failed to load articles. Server responded with status: ${response.status}`);
+        }
+        
+        allArticles = await response.json();
+        
+        // ডিফল্টভাবে শুধুমাত্র পাবলিশড আর্টিকেলগুলো দেখানো হবে
+        const publishedArticles = allArticles.filter(a => a.published);
+        displayArticles(publishedArticles);
+
+    } catch (error) {
+        console.error('Article loading failed:', error);
+        container.innerHTML = `<p style="color: red;">Error: Could not retrieve articles. Please ensure the server is running.</p>`;
+    }
+}
+
 function handleContactForm() {
     const contactForm = document.getElementById('cf-form');
     if (!contactForm) return;
@@ -96,74 +162,4 @@ function handleContactForm() {
             submitButton.textContent = 'Submit';
         }
     });
-}
-
-async function handleArticlesPage() {
-    const container = document.querySelector('.articles-container.articles-grid');
-    const filterButtons = document.querySelectorAll('.filter-buttons button');
-    
-    if (!container) {
-        console.error('Article container not found!');
-        return;
-    }
-
-    let allArticles = []; // সার্ভার থেকে পাওয়া সব আর্টিকেল এখানে স্টোর করা হবে
-
-    // এই ফাংশনটি আর্টিকেলগুলোকে HTML-এ প্রদর্শন করে
-    const displayArticles = (articles) => {
-        if (articles.length === 0) {
-            container.innerHTML = '<p>No articles found matching the filter.</p>';
-            return;
-        }
-
-        container.innerHTML = articles.map(article => `
-            <div class="article-card">
-                <div class="article-image-wrapper">
-                    <img src="http://localhost:5000${article.image}" alt="${article.title}" class="article-image">
-                </div>
-                <div class="article-content">
-                    <h3>${article.title}</h3>
-                    <p>${article.content.substring(0, 100)}...</p>
-                    <div class="article-actions">
-                       <a href="#" class="read-more">Read More</a>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    };
-
-    // ফিল্টার বাটনগুলোতে ইভেন্ট লিসেনার যোগ করা
-    filterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const filter = button.dataset.filter;
-            let filteredArticles = allArticles;
-
-            if (filter === 'published') {
-                filteredArticles = allArticles.filter(a => a.published === true);
-            } else if (filter === 'unpublished') {
-                filteredArticles = allArticles.filter(a => a.published === false);
-            }
-            // 'all' এর জন্য কোনো ফিল্টারের প্রয়োজন নেই, কারণ `filteredArticles` এ ডিফল্টভাবে সব আর্টিকেল থাকে
-
-            displayArticles(filteredArticles);
-        });
-    });
-
-    // সার্ভার থেকে আর্টিকেল লোড করা
-    try {
-        container.innerHTML = '<p>Loading articles...</p>';
-        const response = await fetch('http://localhost:5000/api/articles');
-        if (!response.ok) {
-            throw new Error('Could not connect to the server to load articles.');
-        }
-        
-        allArticles = await response.json();
-        
-        // প্রাথমিকভাবে শুধুমাত্র পাবলিশড আর্টিকেলগুলো দেখানো হবে
-        const publishedArticles = allArticles.filter(a => a.published === true);
-        displayArticles(publishedArticles);
-    } catch (error) {
-        console.error('Article load error:', error);
-        container.innerHTML = `<p style="color: red;">${error.message}</p>`;
-    }
 }

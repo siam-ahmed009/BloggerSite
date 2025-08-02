@@ -13,7 +13,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // GET all articles (Public)
-router.get('/', async (req, res) => {
+router.get('/', protect, async (req, res) => { // <-- Add 'protect' here
     try {
         const articles = await Article.find({}).sort({ createdAt: -1 });
         res.json(articles);
@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET a single article by ID (Public)
-router.get('/:id', async (req, res) => {
+router.get('/:id', protect, async (req, res) => { // <-- Add 'protect' here
     try {
         const article = await Article.findById(req.params.id);
         if (article) {

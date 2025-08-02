@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const loginForm = document.getElementById('login-form');
+const loginForm = document.getElementById('login-form');
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -38,29 +38,71 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     if (window.location.pathname.endsWith('dashboard.html')) {
-        const navLinks = document.querySelectorAll('.admin-nav-link[data-section]');
+        // --- CORRECTED LOGIC STARTS HERE ---
+        const navLinks = document.querySelectorAll('.admin-nav-link');
         const sections = document.querySelectorAll('.dashboard-section');
+
+        const hideAllSections = () => {
+            sections.forEach(s => s.classList.add('hidden'));
+        };
+
+        const showSection = (sectionId) => {
+            hideAllSections();
+            const sectionToShow = document.getElementById(sectionId);
+            if (sectionToShow) {
+                sectionToShow.classList.remove('hidden');
+            }
+        };
 
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const sectionId = link.getAttribute('data-section');
-                
-                navLinks.forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-
-                sections.forEach(s => s.classList.add('hidden'));
-                document.getElementById(sectionId)?.classList.remove('hidden');
+                if (e.target.dataset.section) {
+                    e.preventDefault();
+                    navLinks.forEach(navLink => navLink.classList.remove('active'));
+                    e.target.classList.add('active');
+                    showSection(e.target.dataset.section);
+                }
             });
         });
 
-        // Initialize all dashboard modules
+        handleSiteContentNav();
+
+        // Show the default dashboard section on initial load
+        showSection('dashboard-home-section');
+        // --- CORRECTED LOGIC ENDS HERE ---
+
         initArticleManagement(token, API_BASE_URL);
         initMessageManagement(token, API_BASE_URL);
         initSiteContentForm(token, API_BASE_URL);
     }
 });
 
+function handleSiteContentNav() {
+    const navButtons = document.querySelectorAll('.content-nav-btn');
+    const contentPanels = document.querySelectorAll('.content-panel');
+
+     if (!navButtons.length) return;
+
+    navButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Remove 'active' class from all buttons
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            // Add 'active' class to the clicked button
+            button.classList.add('active');
+
+            // Hide all content panels
+            contentPanels.forEach(panel => panel.classList.add('hidden'));
+
+            // Show the selected content panel
+            const targetSectionId = button.dataset.contentSection;
+            const targetSection = document.getElementById(targetSectionId);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
+        });
+    });
+    navButtons[0].click();
+}
 
 function initSiteContentForm(token, baseUrl) {
     const form = document.getElementById('site-content-form');
@@ -93,6 +135,7 @@ function initSiteContentForm(token, baseUrl) {
     });
 }
 
+
 function initArticleManagement(token, baseUrl) {
     const form = document.getElementById('article-form');
     const list = document.getElementById('article-list');
@@ -100,23 +143,29 @@ function initArticleManagement(token, baseUrl) {
     const resetForm = () => { form.reset(); idInput.value = ''; };
 
     const loadArticles = async () => {
-        const res = await fetch(`${baseUrl}/api/articles`);
-        const articles = await res.json();
-        list.innerHTML = `
-            <table class="admin-table">
-                <thead><tr><th>Title</th><th>Published</th><th>Actions</th></tr></thead>
-                <tbody>
-                    ${articles.map(a => `
-                        <tr>
-                            <td>${a.title}</td>
-                            <td>${a.published ? 'Yes' : 'No'}</td>
-                            <td class="action-buttons">
-                                <button class="btn-edit" data-id="${a._id}">Edit</button>
-                                <button class="btn-delete" data-id="${a._id}">Delete</button>
-                            </td>
-                        </tr>`).join('')}
-                </tbody>
-            </table>`;
+        // CORRECTED: Added Authorization header to the GET request
+        try {
+            const res = await fetch(`${baseUrl}/api/articles`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (!res.ok) throw new Error('Failed to load articles.');
+            const articles = await res.json();
+            list.innerHTML = `
+                <table class="admin-table">
+                    <thead><tr><th>Title</th><th>Published</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        ${articles.map(a => `
+                            <tr>
+                                <td>${a.title}</td>
+                                <td>${a.published ? 'Yes' : 'No'}</td>
+                                <td class="action-buttons">
+                                    <button class="btn-edit" data-id="${a._id}">Edit</button>
+                                    <button class="btn-delete" data-id="${a._id}">Delete</button>
+                                </td>
+                            </tr>`).join('')}
+                    </tbody>
+                </table>`;
+        } catch (error) {
+            list.innerHTML = `<p style="color:red;">${error.message}</p>`;
+        }
     };
 
     form.addEventListener('submit', async (e) => {
@@ -129,7 +178,7 @@ function initArticleManagement(token, baseUrl) {
         try {
             const res = await fetch(url, { 
                 method, 
-                headers: { 'Authorization': `Bearer ${token}` }, // No 'Content-Type'
+                headers: { 'Authorization': `Bearer ${token}` },
                 body: formData 
             });
             if (!res.ok) throw new Error((await res.json()).message || 'Failed to save article.');
@@ -143,7 +192,8 @@ function initArticleManagement(token, baseUrl) {
     list.addEventListener('click', async (e) => {
         const id = e.target.dataset.id;
         if (e.target.matches('.btn-edit')) {
-            const res = await fetch(`${baseUrl}/api/articles/${id}`);
+            // CORRECTED: Added Authorization header to the GET request
+            const res = await fetch(`${baseUrl}/api/articles/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
             const a = await res.json();
             idInput.value = a._id;
             document.getElementById('article-title').value = a.title;
@@ -159,6 +209,55 @@ function initArticleManagement(token, baseUrl) {
     loadArticles();
 }
 
+// function initMessageManagement(token, baseUrl) {
+//     const list = document.getElementById('message-list');
+//     const modal = document.getElementById('reply-modal');
+//     const form = document.getElementById('reply-form');
+//     const closeModalBtn = modal.querySelector('.close-button');
+
+//     const loadMessages = async () => {
+//         const res = await fetch(`${baseUrl}/api/contact/messages`, { headers: { 'Authorization': `Bearer ${token}` } });
+//         const messages = await res.json();
+//         list.innerHTML = messages.map(msg => `
+//             <div class="message-item">
+//                 <p><strong>From:</strong> ${msg.name} (${msg.email})</p>
+//                 <p><strong>Subject:</strong> ${msg.subject}</p>
+//                 <p>${msg.message}</p>
+//                 <p><strong>Status:</strong> ${msg.responded ? 'Responded' : 'New'}</p>
+//                 <button class="reply-btn" data-id="${msg._id}" data-email="${msg.email}" data-subject="${msg.subject}">Reply</button>
+//             </div>`).join('');
+//     };
+
+//     list.addEventListener('click', e => {
+//         if (e.target.matches('.reply-btn')) {
+//             modal.style.display = 'block';
+//             document.getElementById('reply-message-id').value = e.target.dataset.id;
+//             document.getElementById('reply-to-email').value = e.target.dataset.email;
+//             document.getElementById('reply-subject').value = `Re: ${e.target.dataset.subject}`;
+//         }
+//     });
+
+//     form.addEventListener('submit', async e => {
+//         e.preventDefault();
+//         const data = {
+//             messageId: document.getElementById('reply-message-id').value,
+//             to: document.getElementById('reply-to-email').value,
+//             subject: document.getElementById('reply-subject').value,
+//             text: document.getElementById('reply-text').value
+//         };
+//         await fetch(`${baseUrl}/api/contact/reply`, {
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+//             body: JSON.stringify(data)
+//         });
+//         modal.style.display = 'none';
+//         form.reset();
+//         loadMessages();
+//     });
+    
+//     closeModalBtn.addEventListener('click', () => modal.style.display = 'none');
+//     loadMessages();
+// }
 
 function initMessageManagement(token, baseUrl) {
     const list = document.getElementById('message-list');
@@ -167,16 +266,22 @@ function initMessageManagement(token, baseUrl) {
     const closeModalBtn = modal.querySelector('.close-button');
 
     const loadMessages = async () => {
-        const res = await fetch(`${baseUrl}/api/contact/messages`, { headers: { 'Authorization': `Bearer ${token}` } });
-        const messages = await res.json();
-        list.innerHTML = messages.map(msg => `
-            <div class="message-item">
-                <p><strong>From:</strong> ${msg.name} (${msg.email})</p>
-                <p><strong>Subject:</strong> ${msg.subject}</p>
-                <p>${msg.message}</p>
-                <p><strong>Status:</strong> ${msg.responded ? 'Responded' : 'New'}</p>
-                <button class="reply-btn" data-id="${msg._id}" data-email="${msg.email}" data-subject="${msg.subject}">Reply</button>
-            </div>`).join('');
+        try {
+            // This fetch request already had the Authorization header
+            const res = await fetch(`${baseUrl}/api/contact/messages`, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (!res.ok) throw new Error('Failed to load messages.');
+            const messages = await res.json();
+            list.innerHTML = messages.map(msg => `
+                <div class="message-item">
+                    <p><strong>From:</strong> ${msg.name} (${msg.email})</p>
+                    <p><strong>Subject:</strong> ${msg.subject}</p>
+                    <p>${msg.message}</p>
+                    <p><strong>Status:</strong> ${msg.responded ? 'Responded' : 'New'}</p>
+                    <button class="reply-btn" data-id="${msg._id}" data-email="${msg.email}" data-subject="${msg.subject}">Reply</button>
+                </div>`).join('');
+        } catch (error) {
+            list.innerHTML = `<p style="color:red;">${error.message}</p>`;
+        }
     };
 
     list.addEventListener('click', e => {
