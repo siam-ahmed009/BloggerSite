@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f4f6f9;
+  display: flex;
+  height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background: linear-gradient(180deg, #1e293b, #0f172a);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100%;
+  padding: 1.5rem 1rem;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+}
+
+.sidebar h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.sidebar a,
+.sidebar button {
+  background: none;
+  border: none;
+  color: white;
+  padding: 0.8rem 1rem;
+  text-align: left;
+  width: 100%;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+.sidebar a:hover,
+.sidebar button:hover {
+  background-color: rgba(255,255,255,0.1);
+  transform: translateX(5px);
+}
+.sidebar a i,
+.sidebar button i {
+  font-size: 1.1rem;
+}
+
+.sidebar a:hover,
+.sidebar button:hover {
+  background-color: rgba(255,255,255,0.1);
+  transform: translateX(5px);
+}
+
+/* Dropdown */
+.dropdown {
+  display: none;
+  flex-direction: column;
+  background-color: rgba(255,255,255,0.05);
+  border-radius: 5px;
+  margin-top: 0.5rem;
+  padding: 0.3rem 0;
+}
+
+.dropdown a {
+  font-size: 0.9rem;
+  padding: 0.6rem 1rem;
+}
+
+/* Main Content */
+.main-content {
+  
+  margin-left: 250px; /* same as sidebar width */
+  padding: 28px;
+  flex: 1;
+  width: calc(100% - 250px);
+  box-sizing: border-box;
+}
+
+/* Section Cards */
+.admin-section {
+  display: none;
+  background: white;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  width: 90%;
+  max-width: 1200px; /* bigger max width */
+  box-sizing: border-box;
+}
+.main-content .admin-section {
+  margin: 0 auto 2rem auto;
+}
+
+/* Headings */
+h2 {
+  font-size: 1.5rem;
+  margin-bottom: 2.2rem;
+  color: #1e293b;
+  text-align: center;
+}
+
+/* Forms */
+form {
+display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="file"],
+select,
+textarea {
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
+}
+
+/* Buttons */
+button[type="submit"],
+.btn-primary {
+  padding: 0.75rem 1.2rem;
+  background: linear-gradient(90deg, #2563eb, #1d4ed8);
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+button[type="submit"]:hover,
+.btn-primary:hover {
+  background: linear-gradient(90deg, #1d4ed8, #1e40af);
+  transform: translateY(-1px);
+}
+
+main.main-content form,
+main.main-content .admin-section form {
+  max-width: 920px;
+  width: 100%;
+  margin: 0;
+}
+
+/* Make each label a 2-column grid: label-text | control */
+main.main-content form label {
+  display: grid;
+  grid-template-columns: 180px 1fr;   /* tweak 180px to change label column width */
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: #0f172a; /* dark text */
+}
+
+/* On very small screens stack label and input vertically */
+@media (max-width: 768px) {
+  main.main-content form label {
+    grid-template-columns: 1fr; /* label text becomes first row, control second */
+    gap: 0.5rem;
+    align-items: start;
+  }
+}
+
+/* Make inputs/textarea/select full-width and consistent */
+main.main-content input[type="text"],
+main.main-content input[type="date"],
+main.main-content input[type="file"],
+main.main-content select,
+main.main-content textarea,
+main.main-content input[type="email"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+/* reduce default file input height and visually align */
+main.main-content input[type="file"] {
+  padding: 8px 10px;
+}
+
+/* consistent textarea look */
+main.main-content textarea {
+  min-height: 84px;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+/* image previews */
+#hero-preview, #footer-preview, #article-preview {
+  display: block;
+  max-width: 320px;
+  margin-top: 8px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+/* Big full-width save button (visually centered with form) */
+main.main-content button[type="submit"],
+main.main-content .btn-primary {
+  display: inline-block;
+  max-width: 13%;
+  width: auto; /* button won't stretch too far on large screens */
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  border: none;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%);
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12);
+  margin-top: 1rem;
+}
+
+/* smaller screens: make the button same width as fields */
+@media (max-width: 480px) {
+  main.main-content button[type="submit"],
+  main.main-content .btn-primary {
+   padding: 6px 12px; /* slightly smaller on mobile */
+    font-size: 13px;
+  }
+}
+
+
+/* Table */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 0.75rem 0.6rem;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: center;
+  color: #0f172a;
+}
+
+.btn-edit, .btn-delete {
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  border: none;
+  text-decoration: none;
+}
+
+.btn-edit:hover {
+  background: #059669;
+  color: white;
+}
+
+.btn-delete:hover {
+  background: #dc2626;
+  color: white;
+}
+
+.reply-button{
+  width: 100px;
+  padding: 10px;
+  border: none;
+  background: #4CAF50;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.modal-overlay {
+   position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 9999;
+}
+
+/* Modal Box */
+.modal-box {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  width: 100%;
+  max-width: 500px;
+  box-sizing: border-box;
+  max-height: 90vh;
+  overflow-y: auto; /* keeps it inside the viewport */
+}
+
+.modal-title {
+  margin-top: 0;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+/* Message Display */
+.modal-message {
+  background: #f3f4f6;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  word-wrap: break-word;
+}
+
+/* Textarea */
+#modal-reply-text {
+  width: 100%;
+  margin-bottom: 1rem;
+  resize: vertical;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.modal-actions {
+ display: flex;
+  gap: 10px;
+  flex-wrap: wrap; /* Adds space between buttons */
+}
+
+/* Make text wrap nicely */
+.modal-box p {
+  word-wrap: break-word;
+}
+
+/* Mobile */
+.menu-toggle {
+  display: none;
+}
+
+@media screen and (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    background-color: #1e293b;
+    color: white;
+    border: none;
+    padding: 0.5rem 0.8rem;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 1002;
+  }
+  .sidebar {
+    width: 220px;
+    transform: translateX(-100%);
+    box-shadow: inset -40px 0 80px rgba(2,6,23,0.25);
+  }
+  .sidebar.active {
+    transform: translateX(0);
+  }
+  .main-content {
+    margin-left: 0;
+    padding-top: 6rem;
+    width: 100%;
+  }
+}
+ .modal-actions button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: #4CAF50;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.modal-actions button:nth-child(2) {
+  background: #ccc;
+  color: #000;
+}
+
+/* Small screens */
+@media (max-width: 480px) {
+  .modal-box {
+    padding: 15px;
+    max-width: 100%;
+    font-size: 14px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .modal-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    margin-left: 220px; /* adjust for smaller sidebar */
+    width: calc(100% - 220px);
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    padding-top: 6rem; /* leave room for mobile menu toggle */
+  }
+  .admin-section {
+    padding: 1rem;
+    max-width: 100%;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+  <nav class="sidebar">
+  <h2><i class="fa-solid fa-gauge"></i> Dashboard</h2>
+
+  <button onclick="toggleDropdown()">
+    <i class="fa-solid fa-layer-group"></i> Site Content ▾
+  </button>
+  <div class="dropdown" id="site-content-dropdown">
+    <a href="#" onclick="showSection('hero')"><i class="fa-solid fa-image"></i> Hero</a>
+    <a href="#" onclick="showSection('about')"><i class="fa-solid fa-info-circle"></i> About</a>
+    <a href="#" onclick="showSection('footer')"><i class="fa-solid fa-shoe-prints"></i> Footer</a>
+  </div>
+
+  <a href="#" onclick="showSection('articles')"><i class="fa-solid fa-newspaper"></i> Manage Articles</a>
+  <a href="#" onclick="showSection('admin-messages-section')"><i class="fa-solid fa-envelope"></i> Messages</a>
+  <a href="#" id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+</nav>
+
+
+  <main class="main-content">
+    <!-- HERO SECTION -->
+    <section id="hero" class="admin-section">
+      <h2>Hero Section</h2>
+      <form id="hero-form">
+        <label>Hero Title
+          <input type="text" id="heroTitle" placeholder="Enter Hero Title" />
+        </label>
+        <label>Hero Description
+          <textarea id="heroDescription" rows="3" placeholder="Enter Hero Description"></textarea>
+        </label>
+        <label>Hero Image
+          <input type="file" id="heroImage" accept="image/*" />
+        </label>
+        <img id="hero-preview" src="#" style="display:none; max-width:200px;" />
+        <input type="hidden" id="heroImageData" />
+        <button type="submit">Save Hero</button>
+      </form>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section id="about" class="admin-section">
+      <h2>About Section</h2>
+      <form id="about-form">
+        <label>About Title
+          <input type="text" id="aboutTitle" />
+        </label>
+        <label>About Description 1
+          <textarea id="aboutDescription1" rows="3"></textarea>
+        </label>
+        <label>About Description 2
+          <textarea id="aboutDescription2" rows="3"></textarea>
+        </label>
+        <button type="submit">Save About</button>
+      </form>
+    </section>
+
+    <!-- FOOTER SECTION -->
+    <section id="footer" class="admin-section">
+      <h2>Footer Section</h2>
+      <form id="footer-form">
+  <label>Upload Footer Image
+  <input type="file" id="footerImage" accept="image/*" />
+</label>
+<img id="footer-preview" src="#" alt="Footer Preview" style="display:none; max-width: 300px;" />
+<input type="hidden" id="footerAboutImage" />
+
+  <label>Footer Text
+    <textarea id="footerAboutText" rows="3"></textarea>
+  </label>
+  <button type="submit">Save Footer</button>
+</form>
+
+    </section>
+
+    <!-- ARTICLES SECTION -->
+    <section id="articles" class="admin-section">
+      <h2>Articles</h2>
+      <a href="edit-article.html" class="btn-primary">Add Article</a>
+      <div id="dashboard-articles-container" style="margin-top: 1rem;"></div>
+    </section>
+
+    <!-- MESSAGES SECTION -->
+    <section id="admin-messages-section" class="admin-section">
+      <h2>User Messages</h2>
+      <div id="messages-container"></div>
+    </section>
+
+    <!-- REPLY MODAL -->
+    <div id="replyModal" class="modal-overlay" style="display:none;">
+      <div class="modal-box">
+        <h3>Reply to Message</h3>
+        <p><strong>Name:</strong> <span id="modal-name"></span></p>
+        <p><strong>Email:</strong> <span id="modal-email"></span></p>
+        <p><strong>Subject:</strong> <span id="modal-subject"></span></p>
+        <p><strong>Message:</strong></p>
+        <p id="modal-message" class="modal-message" style="background: #f3f4f6; padding: 0.75rem;"></p>
+        <textarea id="modal-reply-text" rows="3" style="width: 100%;" placeholder="Write your reply..."></textarea>
+      <div class="modal-actions">
+  <button id="send-reply-modal-btn">Send Reply</button>
+  <button type="button" onclick="closeModal()" style="margin-left: 1rem;">Cancel</button>
+</div>
+      </div>
+    </div>
+  </main>
+
+  <script src="admin.js"></script>
+</body>
+</html>
